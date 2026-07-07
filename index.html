@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DiffScan</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+  <h1 class="app-title">DiffScan</h1>
+
+  <div class="split" id="inputSplit">
+    <div class="panel">
+      <div class="panel-header">
+        <span>Original text</span>
+        <div class="header-actions">
+          <label class="header-action-btn">Open file <input type="file" id="file1" style="display:none"
+              accept=".txt,.js,.html,.css,.json,.md,.csv,.py,.sh,.ts,.jsx,.tsx"></label>
+        </div>
+      </div>
+      <div class="input-container">
+        <div id="gutter1" class="line-no-input">1</div>
+        <textarea id="text1" class="input" placeholder="Text 1" wrap="off"></textarea>
+      </div>
+      <div class="status-bar">
+        <span id="count1">Lines: 1 &middot; Chars: 0</span>
+        <div class="transform-menu">
+          <button class="transform-btn" data-target="text1" data-action="trim">Trim</button>
+          <button class="transform-btn" data-target="text1" data-action="upper">UPPER</button>
+          <button class="transform-btn" data-target="text1" data-action="lower">lower</button>
+          <button class="transform-btn" data-target="text1" data-action="sort">Sort</button>
+          <button class="transform-btn" data-target="text1" data-action="unique">Unique</button>
+          <button class="transform-btn" data-target="text1" data-action="removeEmpty">Rm empty</button>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header">
+        <span>Changed text</span>
+        <div class="header-actions">
+          <label class="header-action-btn">Open file <input type="file" id="file2" style="display:none"
+              accept=".txt,.js,.html,.css,.json,.md,.csv,.py,.sh,.ts,.jsx,.tsx"></label>
+        </div>
+      </div>
+      <div class="input-container">
+        <div id="gutter2" class="line-no-input">1</div>
+        <textarea id="text2" class="input" placeholder="Text 2" wrap="off"></textarea>
+      </div>
+      <div class="status-bar">
+        <span id="count2">Lines: 1 &middot; Chars: 0</span>
+        <div class="transform-menu">
+          <button class="transform-btn" data-target="text2" data-action="trim">Trim</button>
+          <button class="transform-btn" data-target="text2" data-action="upper">UPPER</button>
+          <button class="transform-btn" data-target="text2" data-action="lower">lower</button>
+          <button class="transform-btn" data-target="text2" data-action="sort">Sort</button>
+          <button class="transform-btn" data-target="text2" data-action="unique">Unique</button>
+          <button class="transform-btn" data-target="text2" data-action="removeEmpty">Rm empty</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-bar">
+    <div class="setting-group">
+      <span class="setting-label">Precision:</span>
+      <div class="segmented-control" id="precisionControl">
+        <button type="button" class="segment-btn active" data-val="line">Line</button>
+        <button type="button" class="segment-btn" data-val="smart">Smart</button>
+        <button type="button" class="segment-btn" data-val="word">Word</button>
+        <button type="button" class="segment-btn" data-val="char">Char</button>
+      </div>
+    </div>
+    <div class="setting-group">
+      <span class="setting-label">Layout:</span>
+      <div class="segmented-control" id="layoutControl">
+        <button type="button" class="segment-btn active" data-val="split">Split</button>
+        <button type="button" class="segment-btn" data-val="unified">Unified</button>
+      </div>
+    </div>
+    <div class="setting-group">
+      <label class="checkbox-label"><input type="checkbox" id="hideWhitespace"> Hide whitespace</label>
+      <label class="checkbox-label"><input type="checkbox" id="ignoreCase"> Ignore case</label>
+      <label class="checkbox-label"><input type="checkbox" id="hideUnchanged"> Hide unchanged</label>
+      <label class="checkbox-label"><input type="checkbox" id="disableWrap" checked> Disable wrap</label>
+      <label class="checkbox-label"><input type="checkbox" id="autoUpdate" checked> Auto-update</label>
+    </div>
+  </div>
+
+  <div class="control-bar">
+    <button id="swapBtn" class="btn-secondary" type="button">Swap</button>
+    <button id="findBtn" class="btn-find" type="button">Find difference</button>
+    <button id="clearBtn" class="btn-secondary" type="button">Clear</button>
+  </div>
+
+  <div id="navBar" class="nav-bar" style="display:none"><button id="navFirst" class="nav-btn">&laquo;</button><button id="navPrev" class="nav-btn">&lsaquo;</button><span id="navCount" class="nav-count">0/0</span><button id="navNext" class="nav-btn">&rsaquo;</button><button id="navLast" class="nav-btn">&raquo;</button></div>
+  <div id="result"></div>
+  <p class="footer-note">DiffScan ver. 1.4.0</p>
+  <button class="scroll-btn scroll-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#8593;</button>
+  <button class="scroll-btn scroll-bottom-btn" onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})">&#8595;</button>
+
+  <script src="js/app.js"></script>
+</body>
+
+</html>
