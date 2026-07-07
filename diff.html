@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diff Checker</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    html,
+    body {
+      height: 100%;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      background: #f5f7fa;
+      color: #1f2328;
+      font-size: 14px;
+      line-height: 1.5
+    }
+
+    body {
+      padding: 12px 16px 0;
+      min-height: 100vh;
+      overflow-y: auto
+    }
+
+    h1.app-title {
+      text-align: center;
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #1f2328;
+      flex: 0 0 auto
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      flex: 0 0 auto
+    }
+
+    .panel {
+      background: #fff;
+      border: 1px solid #d0d7de;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .04);
+      display: flex;
+      flex-direction: column;
+      height: 50vh;
+      min-height: 150px;
+      max-height: 70vh
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 12px;
+      background: #f6f8fa;
+      border-bottom: 1px solid #d0d7de;
+      font-size: 13px;
+      font-weight: 600;
+      color: #57606a;
+      flex: 0 0 auto
+    }
+
+    .panel-header .count-removed {
+      color: #cf222e
+    }
+
+    .panel-header .count-added {
+      color: #1a7f37
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .header-action-btn {
+      font-size: 12px;
+      color: #0969da;
+      cursor: pointer;
+      font-weight: 500;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid transparent;
+      transition: background .15s;
+      background: none;
+      font-family: inherit
+    }
+
+    .header-action-btn:hover {
+      background: #eaeef2;
+      text-decoration: underline
+    }
+
+    .input-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden
+    }
+
+    .line-no-input {
+      flex: 0 0 42px;
+      text-align: right;
+      padding: 8px 6px;
+      color: #8c959f;
+      background: #f6f8fa;
+      border-right: 1px solid #eaeef2;
+      user-select: none;
+      font-family: inherit;
+      font-size: 14px;
+      line-height: 1.5;
+      white-space: pre;
+      overflow: hidden
+    }
+
+    textarea.input {
+      flex: 1;
+      padding: 8px 10px;
+      border: none;
+      outline: none;
+      resize: none;
+      font-family: inherit;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #1f2328;
+      background: #fff;
+      overflow-y: auto;
+      overflow-x: auto;
+      white-space: pre
+    }
+
+    textarea.input.wrap {
+      white-space: pre-wrap;
+      word-break: break-word
+    }
+
+    textarea.input::placeholder {
+      color: #8c959f
+    }
+
+    .status-bar {
+      display: flex;
+      gap: 12px;
+      padding: 3px 12px;
+      font-size: 11px;
+      color: #8c959f;
+      background: #fafbfc;
+      border-top: 1px solid #eaeef2;
+      flex: 0 0 auto
+    }
+
+    .transform-menu {
+      display: inline-flex;
+      gap: 4px;
+      margin-left: auto
+    }
+
+    .transform-btn {
+      font-size: 10px;
+      color: #0969da;
+      background: none;
+      border: 1px solid #d0d7de;
+      border-radius: 3px;
+      padding: 1px 5px;
+      cursor: pointer;
+      font-family: inherit
+    }
+
+    .transform-btn:hover {
+      background: #eaeef2
+    }
+
+    .settings-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 8px auto 0;
+      background: #fff;
+      padding: 6px 14px;
+      border: 1px solid #d0d7de;
+      border-radius: 8px;
+      max-width: 900px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .02);
+      flex: 0 0 auto
+    }
+
+    .setting-group {
+      display: flex;
+      align-items: center;
+      gap: 5px
+    }
+
+    .setting-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #57606a;
+      white-space: nowrap
+    }
+
+    .segmented-control {
+      display: flex;
+      border: 1px solid #d0d7de;
+      border-radius: 5px;
+      overflow: hidden;
+      background: #fff
+    }
+
+    .segment-btn {
+      padding: 3px 10px;
+      background: #fff;
+      border: none;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 500;
+      color: #57606a;
+      cursor: pointer;
+      transition: background .15s, color .15s
+    }
+
+    .segment-btn:not(:last-child) {
+      border-right: 1px solid #d0d7de
+    }
+
+    .segment-btn:hover {
+      background: #f6f8fa;
+      color: #1f2328
+    }
+
+    .segment-btn.active {
+      background: #0969da;
+      color: #fff;
+      font-weight: 600
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 11px;
+      font-weight: 500;
+      color: #24292f;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap
+    }
+
+    .checkbox-label input {
+      cursor: pointer;
+      width: 12px;
+      height: 12px
+    }
+
+    .control-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin: 8px auto 0;
+      flex: 0 0 auto
+    }
+
+    .btn-secondary {
+      padding: 7px 16px;
+      background: #fff;
+      color: #57606a;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background .15s
+    }
+
+    .btn-secondary:hover {
+      background: #f6f8fa;
+      color: #1f2328
+    }
+
+    .btn-find {
+      padding: 7px 24px;
+      background: #2da44e;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background .15s
+    }
+
+    .btn-find:hover {
+      background: #218838
+    }
+
+    #result {
+      margin-top: 8px
+    }
+
+    .copy-btn {
+      background: #fff;
+      border: 1px solid #d0d7de;
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 11px;
+      color: #57606a;
+      cursor: pointer;
+      font-family: inherit
+    }
+
+    .copy-btn:hover {
+      background: #f3f4f6
+    }
+
+    .diff-body {
+      overflow: visible;
+      flex: 1;
+      min-height: auto
+    }
+
+    .panel.result-panel {
+      height: auto;
+      max-height: none
+    }
+
+    .diff-line {
+      display: flex;
+      white-space: pre;
+      min-height: 20px;
+      font-size: 13px
+    }
+
+    .diff-line.wrap {
+      white-space: pre-wrap;
+      word-break: break-word
+    }
+
+    .line-no {
+      flex: 0 0 42px;
+      text-align: right;
+      padding: 0 6px;
+      color: #8c959f;
+      background: #f6f8fa;
+      border-right: 1px solid #eaeef2;
+      user-select: none;
+      font-size: 13px
+    }
+
+    .line-no-right {
+      flex: 0 0 42px;
+      text-align: right;
+      padding: 0 6px;
+      color: #8c959f;
+      background: #f0f2f5;
+      border-right: 1px solid #d8dee4;
+      user-select: none;
+      font-size: 13px
+    }
+
+    .line-content {
+      flex: 1;
+      padding: 0 8px;
+      white-space: pre
+    }
+
+    .diff-line.wrap .line-content {
+      white-space: pre-wrap;
+      word-break: break-word
+    }
+
+    .row-equal {
+      background: #fff
+    }
+
+    .row-removed {
+      background: #ffe5e5
+    }
+
+    .row-added {
+      background: #dcffe4
+    }
+
+    .row-modified {
+      background: #fff8d6
+    }
+
+    .row-empty {
+      color: #b8bec4;
+      background: #f6f7f9
+    }
+
+    .row-collapsed {
+      background: #f0f2f5;
+      color: #8c959f;
+      font-style: italic;
+      font-size: 11px;
+      text-align: center;
+      cursor: pointer;
+      user-select: none
+    }
+
+    .row-collapsed:hover {
+      background: #e8eaed
+    }
+
+    .diff-line.highlight-change {
+      outline: 2px solid #0969da;
+      outline-offset: -1px;
+      z-index: 1;
+      position: relative
+    }
+
+    .mark-removed {
+      background: #ff4d4f;
+      color: #fff;
+      font-weight: 700;
+      border-radius: 2px;
+      padding: 0 1px
+    }
+
+    .mark-added {
+      background: #1a7f37;
+      color: #fff;
+      font-weight: 700;
+      border-radius: 2px;
+      padding: 0 1px
+    }
+
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 4px 10px;
+      margin: 8px auto 0;
+      max-width: 900px;
+      width: 100%;
+      background: #fff;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      font-size: 11px;
+      color: #57606a;
+      flex: 0 0 auto
+    }
+
+    .nav-btn {
+      background: #f6f8fa;
+      border: 1px solid #d0d7de;
+      border-radius: 4px;
+      padding: 3px 8px;
+      font-size: 11px;
+      cursor: pointer;
+      font-family: inherit;
+      color: #24292f;
+      transition: background .15s
+    }
+
+    .nav-btn:hover {
+      background: #eaeef2
+    }
+
+    .nav-btn:disabled {
+      opacity: .4;
+      cursor: default;
+      background: #f6f8fa
+    }
+
+    .nav-count {
+      font-weight: 600;
+      min-width: 50px;
+      text-align: center
+    }
+
+    .footer-note {
+      text-align: center;
+      color: #8c959f;
+      font-size: 10px;
+      padding: 8px 0;
+      background: #f5f7fa;
+      margin-top: 5px
+    }
+
+    .scroll-btn {
+      position: fixed;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: #2da44e;
+      border: none;
+      color: #fff;
+      font-size: 20px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 3px 8px rgba(0,0,0,.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      transition: background .15s, transform .15s
+    }
+
+    .scroll-btn:hover {
+      background: #238636;
+      transform: translateY(-2px)
+    }
+
+    .scroll-top-btn {
+      top: calc(50% - 44px)
+    }
+
+    .scroll-bottom-btn {
+      top: calc(50% + 4px)
+    }
+
+    #result {
+      margin-bottom: 5px
+    }
+
+    @media(max-width:760px) {
+      .split {
+        grid-template-columns: 1fr
+      }
+
+      h1.app-title {
+        font-size: 18px
+      }
+
+      .settings-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+        padding: 6px 8px
+      }
+
+      .setting-group {
+        flex-wrap: wrap;
+        gap: 4px 8px
+      }
+
+      .checkbox-label {
+        font-size: 11px
+      }
+
+      .control-bar {
+        flex-wrap: wrap
+      }
+
+      .nav-bar {
+        flex-wrap: wrap
+      }
+
+      .panel {
+        height: 30vh
+      }
+
+      .scroll-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+        right: 10px
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1 class="app-title">DiffScan</h1>
+
+  <div class="split" id="inputSplit">
+    <div class="panel">
+      <div class="panel-header">
+        <span>Original text</span>
+        <div class="header-actions">
+          <label class="header-action-btn">Open file <input type="file" id="file1" style="display:none"
+              accept=".txt,.js,.html,.css,.json,.md,.csv,.py,.sh,.ts,.jsx,.tsx"></label>
+        </div>
+      </div>
+      <div class="input-container">
+        <div id="gutter1" class="line-no-input">1</div>
+        <textarea id="text1" class="input" placeholder="Text 1" wrap="off"></textarea>
+      </div>
+      <div class="status-bar">
+        <span id="count1">Lines: 1 &middot; Chars: 0</span>
+        <div class="transform-menu">
+          <button class="transform-btn" data-target="text1" data-action="trim">Trim</button>
+          <button class="transform-btn" data-target="text1" data-action="upper">UPPER</button>
+          <button class="transform-btn" data-target="text1" data-action="lower">lower</button>
+          <button class="transform-btn" data-target="text1" data-action="sort">Sort</button>
+          <button class="transform-btn" data-target="text1" data-action="unique">Unique</button>
+          <button class="transform-btn" data-target="text1" data-action="removeEmpty">Rm empty</button>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header">
+        <span>Changed text</span>
+        <div class="header-actions">
+          <label class="header-action-btn">Open file <input type="file" id="file2" style="display:none"
+              accept=".txt,.js,.html,.css,.json,.md,.csv,.py,.sh,.ts,.jsx,.tsx"></label>
+        </div>
+      </div>
+      <div class="input-container">
+        <div id="gutter2" class="line-no-input">1</div>
+        <textarea id="text2" class="input" placeholder="Text 2" wrap="off"></textarea>
+      </div>
+      <div class="status-bar">
+        <span id="count2">Lines: 1 &middot; Chars: 0</span>
+        <div class="transform-menu">
+          <button class="transform-btn" data-target="text2" data-action="trim">Trim</button>
+          <button class="transform-btn" data-target="text2" data-action="upper">UPPER</button>
+          <button class="transform-btn" data-target="text2" data-action="lower">lower</button>
+          <button class="transform-btn" data-target="text2" data-action="sort">Sort</button>
+          <button class="transform-btn" data-target="text2" data-action="unique">Unique</button>
+          <button class="transform-btn" data-target="text2" data-action="removeEmpty">Rm empty</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-bar">
+    <div class="setting-group">
+      <span class="setting-label">Precision:</span>
+      <div class="segmented-control" id="precisionControl">
+        <button type="button" class="segment-btn active" data-val="line">Line</button>
+        <button type="button" class="segment-btn" data-val="smart">Smart</button>
+        <button type="button" class="segment-btn" data-val="word">Word</button>
+        <button type="button" class="segment-btn" data-val="char">Char</button>
+      </div>
+    </div>
+    <div class="setting-group">
+      <span class="setting-label">Layout:</span>
+      <div class="segmented-control" id="layoutControl">
+        <button type="button" class="segment-btn active" data-val="split">Split</button>
+        <button type="button" class="segment-btn" data-val="unified">Unified</button>
+      </div>
+    </div>
+    <div class="setting-group">
+      <label class="checkbox-label"><input type="checkbox" id="hideWhitespace"> Hide whitespace</label>
+      <label class="checkbox-label"><input type="checkbox" id="ignoreCase"> Ignore case</label>
+      <label class="checkbox-label"><input type="checkbox" id="hideUnchanged"> Hide unchanged</label>
+      <label class="checkbox-label"><input type="checkbox" id="disableWrap" checked> Disable wrap</label>
+      <label class="checkbox-label"><input type="checkbox" id="autoUpdate" checked> Auto-update</label>
+    </div>
+  </div>
+
+  <div class="control-bar">
+    <button id="swapBtn" class="btn-secondary" type="button">Swap</button>
+    <button id="findBtn" class="btn-find" type="button">Find difference</button>
+    <button id="clearBtn" class="btn-secondary" type="button">Clear</button>
+  </div>
+
+  <div id="navBar" class="nav-bar" style="display:none"><button id="navFirst" class="nav-btn">&laquo;</button><button id="navPrev" class="nav-btn">&lsaquo;</button><span id="navCount" class="nav-count">0/0</span><button id="navNext" class="nav-btn">&rsaquo;</button><button id="navLast" class="nav-btn">&raquo;</button></div>
+  <div id="result"></div>
+  <p class="footer-note">DiffScan ver. 1.4.0</p>
+  <button class="scroll-btn scroll-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#8593;</button>
+  <button class="scroll-btn scroll-bottom-btn" onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})">&#8595;</button>
+
+  <script>
+    "use strict";
+
+    var diffPrecision = "line", layoutMode = "split", hideWhitespace = false, ignoreCase = false, hideUnchanged = false, wrapLines = false;
+    var changeIndex = -1, changeRows = [];
+
+    function splitLines(t) { if (t === "") return [""]; return t.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n") }
+    function normalizeWhitespace(s) { return s.replace(/\s+/g, " ").trim() }
+    function escapeHtml(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") }
+    function tokenizeWords(s) { return s.match(/[\p{L}\p{N}_]+|[^\p{L}\p{N}\s]+|\s+/gu) || [] }
+
+    function computeTokenDiff(A, B) {
+      var n = A.length, m = B.length, dp = [];
+      for (var i = 0; i <= n; i++)dp.push(new Array(m + 1).fill(0));
+      for (var i = n - 1; i >= 0; i--)for (var j = m - 1; j >= 0; j--)dp[i][j] = A[i] === B[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+      var left = [], right = [], ii = 0, jj = 0;
+      function push(a, t, v) { var l = a[a.length - 1]; if (l && l.type === t) l.value += v; else a.push({ type: t, value: v }) }
+      while (ii < n && jj < m) { if (A[ii] === B[jj]) { push(left, "equal", A[ii]); push(right, "equal", B[jj]); ii++; jj++ } else if (dp[ii + 1][jj] > dp[ii][jj + 1]) { push(left, "removed", A[ii]); ii++ } else { push(right, "added", B[jj]); jj++ } }
+      while (ii < n) { push(left, "removed", A[ii]); ii++ }
+      while (jj < m) { push(right, "added", B[jj]); jj++ }
+      return { left: left, right: right }
+    }
+
+    function computeInnerDiff(a, b) {
+      if (!a && !b) return { left: [], right: [] };
+      if (diffPrecision === "line") return { left: [{ type: "equal", value: a }], right: [{ type: "equal", value: b }] };
+      if (diffPrecision === "char") return computeTokenDiff(Array.from(a), Array.from(b));
+      if (diffPrecision === "word") return computeTokenDiff(tokenizeWords(a), tokenizeWords(b));
+      if (a.length <= 8 || b.length <= 8) return computeTokenDiff(Array.from(a), Array.from(b));
+      var w = computeTokenDiff(tokenizeWords(a), tokenizeWords(b));
+      var rl = 0, al = 0;
+      for (var t = 0; t < w.left.length; t++)if (w.left[t].type === "removed") rl += w.left[t].value.length;
+      for (var t = 0; t < w.right.length; t++)if (w.right[t].type === "added") al += w.right[t].value.length;
+      var mx = Math.max(a.length, b.length);
+      if (mx > 0 && (rl + al) / mx > 0.6) return computeTokenDiff(Array.from(a), Array.from(b));
+      var rl2 = [], rr2 = [];
+      var li = 0, ri = 0;
+      while (li < w.left.length && ri < w.right.length) {
+        if (w.left[li].type === "equal") { rl2.push(w.left[li]); rr2.push(w.right[ri]); li++; ri++ }
+        else if (w.left[li].type === "removed" && w.right[ri].type === "added") {
+          var ch = computeTokenDiff(Array.from(w.left[li].value), Array.from(w.right[ri].value));
+          rl2.push(ch.left); rr2.push(ch.right); li++; ri++
+        }
+        else if (w.left[li].type === "removed") { rl2.push(w.left[li]); li++ }
+        else { rr2.push(w.right[ri]); ri++ }
+      }
+      while (li < w.left.length) { rl2.push(w.left[li]); li++ }
+      while (ri < w.right.length) { rr2.push(w.right[ri]); ri++ }
+      function flat(a) { var r = []; for (var i = 0; i < a.length; i++) { var x = a[i]; if (Array.isArray(x)) for (var j = 0; j < x.length; j++) r.push(x[j]); else r.push(x) } return r }
+      return { left: flat(rl2), right: flat(rr2) }
+    }
+
+    function computeLineDiff(a, b) {
+      var n = a.length, m = b.length;
+      function gv(l) { var v = l; if (ignoreCase) v = v.toLowerCase(); if (hideWhitespace) v = normalizeWhitespace(v); return v }
+      var dp = [];
+      for (var i = 0; i <= n; i++)dp.push(new Array(m + 1).fill(0));
+      for (var i = n - 1; i >= 0; i--)for (var j = m - 1; j >= 0; j--)dp[i][j] = gv(a[i]) === gv(b[j]) ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+      var ops = [], ii = 0, jj = 0;
+      while (ii < n && jj < m) { if (gv(a[ii]) === gv(b[jj])) { ops.push({ type: "equal", left: a[ii], right: b[jj] }); ii++; jj++ } else if (dp[ii + 1][jj] > dp[ii][jj + 1]) { ops.push({ type: "removed", left: a[ii] }); ii++ } else { ops.push({ type: "added", right: b[jj] }); jj++ } }
+      while (ii < n) { ops.push({ type: "removed", left: a[ii] }); ii++ }
+      while (jj < m) { ops.push({ type: "added", right: b[jj] }); jj++ }
+      var merged = [], k = 0;
+      while (k < ops.length) {
+        if (ops[k].type === "removed" && k + 1 < ops.length && ops[k + 1].type === "added") {
+          var rr = [], ar = [];
+          while (k < ops.length && ops[k].type === "removed") { rr.push(ops[k].left); k++ }
+          while (k < ops.length && ops[k].type === "added") { ar.push(ops[k].right); k++ }
+          var p = Math.min(rr.length, ar.length);
+          for (var q = 0; q < p; q++)merged.push({ type: "modified", left: rr[q], right: ar[q] });
+          for (var q = p; q < rr.length; q++)merged.push({ type: "removed", left: rr[q] });
+          for (var q = p; q < ar.length; q++)merged.push({ type: "added", right: ar[q] });
+        } else if (ops[k].type === "added" && k + 1 < ops.length && ops[k + 1].type === "removed") {
+          var rr2 = [], ar2 = [];
+          while (k < ops.length && ops[k].type === "added") { ar2.push(ops[k].right); k++ }
+          while (k < ops.length && ops[k].type === "removed") { rr2.push(ops[k].left); k++ }
+          var p2 = Math.min(rr2.length, ar2.length);
+          for (var q = 0; q < p2; q++)merged.push({ type: "modified", left: rr2[q], right: ar2[q] });
+          for (var q = p2; q < rr2.length; q++)merged.push({ type: "removed", left: rr2[q] });
+          for (var q = p2; q < ar2.length; q++)merged.push({ type: "added", right: ar2[q] });
+        } else { merged.push(ops[k]); k++ }
+      }
+      var ln = 1, rn = 1, result = [];
+      for (var u = 0; u < merged.length; u++) {
+        var o = merged[u];
+        if (o.type === "equal") result.push({ type: "equal", left: o.left, right: o.right, leftNo: ln++, rightNo: rn++ });
+        else if (o.type === "modified") result.push({ type: "modified", left: o.left, right: o.right, leftNo: ln++, rightNo: rn++ });
+        else if (o.type === "removed") result.push({ type: "removed", left: o.left, leftNo: ln++ });
+        else result.push({ type: "added", right: o.right, rightNo: rn++ });
+      }
+      return result
+    }
+
+    function renderInnerHtml(tokens, side) {
+      var h = "";
+      for (var i = 0; i < tokens.length; i++) { var s = escapeHtml(tokens[i].value); if (tokens[i].type === "equal") h += s; else h += '<span class="' + (side === "left" ? "mark-removed" : "mark-added") + '">' + s + '</span>' }
+      return h
+    }
+
+    function buildLineHtml(entry, side) {
+      var ln = "", ch = "", rc = "row-";
+      if (entry.type === "equal") { ln = side === "left" ? entry.leftNo : entry.rightNo; var t = side === "left" ? entry.left : entry.right; ch = t === "" ? "\u00a0" : escapeHtml(t); rc += "equal" }
+      else if (entry.type === "modified") { ln = side === "left" ? entry.leftNo : entry.rightNo; var inner = computeInnerDiff(entry.left, entry.right); ch = renderInnerHtml(side === "left" ? inner.left : inner.right, side); rc += "modified" }
+      else if (entry.type === "removed") { if (side === "left") { ln = entry.leftNo; ch = entry.left === "" ? "\u00a0" : escapeHtml(entry.left); rc += "removed" } else { rc += "empty" } }
+      else if (entry.type === "added") { if (side === "right") { ln = entry.rightNo; ch = entry.right === "" ? "\u00a0" : escapeHtml(entry.right); rc += "added" } else { rc += "empty" } }
+      return '<div class="diff-line' + (wrapLines ? " wrap" : "") + ' ' + rc + '"><span class="line-no">' + ln + '</span><span class="line-content">' + (ch || "\u00a0") + '</span></div>'
+    }
+
+    function handleMergeAction(side, text) {
+      var tid = side === "right" ? "text2" : "text1", ta = document.getElementById(tid);
+      var cur = ta.value;
+      if (cur === "") ta.value = text; else ta.value = cur.endsWith("\n") ? cur + text : cur + "\n" + text;
+      updateInputGutter(tid, "gutter" + tid.slice(-1)); updateCounts(); triggerDiff()
+    }
+
+    function collapseUnchanged(diff) {
+      if (!hideUnchanged) return diff;
+      var r = [], eq = 0, eqb = [];
+      for (var i = 0; i < diff.length; i++) { if (diff[i].type === "equal") { eq++; eqb.push(diff[i]) } else { if (eq > 2) r.push({ type: "collapsed", count: eq }); else if (eq > 0) r.push.apply(r, eqb); eq = 0; eqb = []; r.push(diff[i]) } }
+      if (eq > 2) r.push({ type: "collapsed", count: eq }); else if (eq > 0) r.push.apply(r, eqb);
+      return r
+    }
+
+    function renderResult(diff, rawLeft, rawRight) {
+      var c = document.getElementById("result"); c.innerHTML = "";
+      var rm = 0, ad = 0;
+      for (var i = 0; i < diff.length; i++) { if (diff[i].type === "removed") rm++; else if (diff[i].type === "added") ad++; else if (diff[i].type === "modified") { rm++; ad++ } }
+      var dd = collapseUnchanged(diff);
+      if (layoutMode === "unified") renderUnified(c, dd, rm, ad, rawLeft, rawRight);
+      else renderSplit(c, dd, rm, ad, rawLeft, rawRight);
+      var rb = c.querySelector(".diff-body"); if (rb) { markChanges(rb); showNavBar() }
+    }
+
+    function renderSplit(c, dd, rm, ad, rl, rr) {
+      var sd = document.createElement("div"); sd.className = "split";
+      // Left
+      var pL = document.createElement("div"); pL.className = "panel result-panel"; pL.style.height = "auto";
+      var hL = document.createElement("div"); hL.className = "panel-header";
+      var lL = document.createElement("span"); lL.className = "count-removed"; lL.textContent = rm + " removal" + (rm === 1 ? "" : "s"); hL.appendChild(lL);
+      hL.appendChild(makeCopyBtn(rl)); pL.appendChild(hL);
+      var bL = document.createElement("div"); bL.className = "diff-body";
+      for (var i = 0; i < dd.length; i++) { if (dd[i].type === "collapsed") bL.insertAdjacentHTML("beforeend", '<div class="diff-line row-collapsed"><span class="line-no"></span><span class="line-content">\u2026 ' + dd[i].count + ' unchanged \u2026</span></div>'); else bL.insertAdjacentHTML("beforeend", buildLineHtml(dd[i], "left")) }
+      pL.appendChild(bL);
+      // Right
+      var pR = document.createElement("div"); pR.className = "panel result-panel"; pR.style.height = "auto";
+      var hR = document.createElement("div"); hR.className = "panel-header";
+      var lR = document.createElement("span"); lR.className = "count-added"; lR.textContent = ad + " addition" + (ad === 1 ? "" : "s"); hR.appendChild(lR);
+      hR.appendChild(makeCopyBtn(rr)); pR.appendChild(hR);
+      var bR = document.createElement("div"); bR.className = "diff-body";
+      for (var i = 0; i < dd.length; i++) { if (dd[i].type === "collapsed") bR.insertAdjacentHTML("beforeend", '<div class="diff-line row-collapsed"><span class="line-no"></span><span class="line-content">\u2026 ' + dd[i].count + ' unchanged \u2026</span></div>'); else bR.insertAdjacentHTML("beforeend", buildLineHtml(dd[i], "right")) }
+      pR.appendChild(bR);
+      sd.appendChild(pL); sd.appendChild(pR); c.appendChild(sd);
+    }
+
+    function renderUnified(c, dd, rm, ad, rl, rr) {
+      var p = document.createElement("div"); p.className = "panel result-panel"; p.style.height = "auto"; p.style.flex = "1";
+      var h = document.createElement("div"); h.className = "panel-header";
+      var l = document.createElement("span"); l.innerHTML = '<span class="count-removed">' + rm + ' removal' + (rm === 1 ? "" : "s") + '</span> &middot; <span class="count-added">' + ad + ' addition' + (ad === 1 ? "" : "s") + '</span>';
+      h.appendChild(l); h.appendChild(makeCopyBtn(rl + "\n---\n" + rr)); p.appendChild(h);
+      var b = document.createElement("div"); b.className = "diff-body";
+      for (var i = 0; i < dd.length; i++) {
+        var e = dd[i];
+        if (e.type === "collapsed") b.insertAdjacentHTML("beforeend", '<div class="diff-line row-collapsed"><span class="line-no"></span><span class="line-no-right"></span><span class="line-content">\u2026 ' + e.count + ' unchanged \u2026</span></div>');
+        else if (e.type === "equal") b.insertAdjacentHTML("beforeend", '<div class="diff-line row-equal"><span class="line-no">' + e.leftNo + '</span><span class="line-no-right">' + e.rightNo + '</span><span class="line-content">' + escapeHtml(e.left || "") + '</span></div>');
+        else if (e.type === "removed") b.insertAdjacentHTML("beforeend", '<div class="diff-line row-removed"><span class="line-no">' + e.leftNo + '</span><span class="line-no-right"></span><span class="line-content">' + escapeHtml(e.left || "") + '</span></div>');
+        else if (e.type === "added") b.insertAdjacentHTML("beforeend", '<div class="diff-line row-added"><span class="line-no"></span><span class="line-no-right">' + e.rightNo + '</span><span class="line-content">' + escapeHtml(e.right || "") + '</span></div>');
+        else if (e.type === "modified") { var inner = computeInnerDiff(e.left, e.right); b.insertAdjacentHTML("beforeend", '<div class="diff-line row-modified"><span class="line-no">' + e.leftNo + '</span><span class="line-no-right">' + e.rightNo + '</span><span class="line-content">' + renderInnerHtml(inner.left, "left") + '</span></div><div class="diff-line row-modified"><span class="line-no">' + e.leftNo + '</span><span class="line-no-right">' + e.rightNo + '</span><span class="line-content">' + renderInnerHtml(inner.right, "right") + '</span></div>') }
+      }
+      p.appendChild(b); c.appendChild(p)
+    }
+
+    function makeCopyBtn(t) { var b = document.createElement("button"); b.className = "copy-btn"; b.textContent = "Copy"; b.addEventListener("click", function () { copyToClipboard(t); b.textContent = "Copied!"; setTimeout(function () { b.textContent = "Copy" }, 1200) }); return b }
+
+    function syncScrollResult(e1, e2) {
+      var a = null;
+      e1.addEventListener("mouseenter", function () { a = e1 }); e2.addEventListener("mouseenter", function () { a = e2 });
+      e1.addEventListener("scroll", function () { if (a === e1) { e2.scrollTop = e1.scrollTop; e2.scrollLeft = e1.scrollLeft } });
+      e2.addEventListener("scroll", function () { if (a === e2) { e1.scrollTop = e2.scrollTop; e1.scrollLeft = e2.scrollLeft } })
+    }
+
+    function markChanges(body) {
+      var rows = body.querySelectorAll(".row-removed,.row-added,.row-modified");
+      changeRows = []; for (var i = 0; i < rows.length; i++)if (!rows[i].classList.contains("row-empty") && !rows[i].classList.contains("row-collapsed")) changeRows.push(rows[i]);
+      changeIndex = changeRows.length > 0 ? 0 : -1; updateNavHighlight(); updateNavLabel()
+    }
+    function updateNavHighlight() { for (var i = 0; i < changeRows.length; i++)changeRows[i].classList.remove("highlight-change"); if (changeIndex >= 0 && changeIndex < changeRows.length) { changeRows[changeIndex].classList.add("highlight-change"); changeRows[changeIndex].scrollIntoView({ behavior: "smooth", block: "center" }) } }
+    function goFirst() { changeIndex = changeRows.length > 0 ? 0 : -1; updateNavHighlight(); updateNavLabel() }
+    function goPrev() { if (changeIndex > 0) { changeIndex--; updateNavHighlight(); updateNavLabel() } }
+    function goNext() { if (changeIndex < changeRows.length - 1) { changeIndex++; updateNavHighlight(); updateNavLabel() } }
+    function goLast() { changeIndex = changeRows.length - 1; updateNavHighlight(); updateNavLabel() }
+    function showNavBar() { var n = document.getElementById("navBar"); if (n) { n.style.display = "flex"; updateNavLabel() } }
+    function updateNavLabel() { var t = changeRows.length, c = changeIndex >= 0 ? changeIndex + 1 : 0; var s = document.getElementById("navCount"); if (s) s.textContent = c + "/" + t; var f = document.getElementById("navFirst"), p = document.getElementById("navPrev"), n = document.getElementById("navNext"), l = document.getElementById("navLast"); if (f) f.disabled = t === 0 || changeIndex <= 0; if (p) p.disabled = t === 0 || changeIndex <= 0; if (n) n.disabled = t === 0 || changeIndex >= t - 1; if (l) l.disabled = t === 0 || changeIndex >= t - 1 }
+
+    function copyToClipboard(t) { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).catch(function () { legacyCopy(t) }); else legacyCopy(t) }
+    function legacyCopy(t) { var a = document.createElement("textarea"); a.value = t; a.style.cssText = "position:fixed;opacity:0"; document.body.appendChild(a); a.select(); try { document.execCommand("copy") } catch (e) { } document.body.removeChild(a) }
+
+    function updateInputGutter(tid, gid) { var ta = document.getElementById(tid), g = document.getElementById(gid), l = ta.value.split("\n").length, n = []; for (var i = 1; i <= l; i++)n.push(i); g.textContent = n.join("\n") }
+    function updateCounts() { for (var i = 1; i <= 2; i++) { var ta = document.getElementById("text" + i), l = ta.value === "" ? 1 : ta.value.split("\n").length, c = ta.value.length; document.getElementById("count" + i).textContent = "Lines: " + l + " \u00b7 Chars: " + c } }
+
+    function applyTransform(tid, action) {
+      var ta = document.getElementById(tid), lines = ta.value.split("\n");
+      switch (action) {
+        case "trim": lines = lines.map(function (l) { return l.trimEnd() }); break;
+        case "upper": lines = lines.map(function (l) { return l.toUpperCase() }); break;
+        case "lower": lines = lines.map(function (l) { return l.toLowerCase() }); break;
+        case "sort": lines.sort(); break;
+        case "unique": var s = {}; lines = lines.filter(function (l) { if (s[l]) return false; s[l] = true; return true }); break;
+        case "removeEmpty": lines = lines.filter(function (l) { return l.trim() !== "" }); break;
+      }
+      ta.value = lines.join("\n"); updateInputGutter(tid, "gutter" + tid.slice(-1)); updateCounts(); triggerDiff()
+    }
+
+    function triggerDiff() {
+      var scrollY = window.scrollY;
+      var scrollX = window.scrollX;
+      var focusEl = document.activeElement;
+      document.documentElement.style.overflow = "hidden";
+      var r1 = document.getElementById("text1").value, r2 = document.getElementById("text2").value;
+      var l1 = splitLines(r1), l2 = splitLines(r2);
+      var diff = computeLineDiff(l1, l2);
+      renderResult(diff, r1, r2); updateCounts();
+      document.documentElement.style.overflow = "";
+      window.scrollTo(scrollX, scrollY);
+      if (focusEl) focusEl.focus();
+    }
+
+    var ta1 = document.getElementById("text1"), ta2 = document.getElementById("text2"), g1 = document.getElementById("gutter1"), g2 = document.getElementById("gutter2"), au = document.getElementById("autoUpdate");
+    function updateG1() { updateInputGutter("text1", "gutter1"); updateCounts() }
+    function updateG2() { updateInputGutter("text2", "gutter2"); updateCounts() }
+
+    ta1.addEventListener("input", function () { updateG1(); if (au.checked) triggerDiff() });
+    ta2.addEventListener("input", function () { updateG2(); if (au.checked) triggerDiff() });
+    ta1.addEventListener("scroll", function () { g1.scrollTop = ta1.scrollTop });
+    ta2.addEventListener("scroll", function () { g2.scrollTop = ta2.scrollTop });
+
+    // Bidirectional sync scroll for inputs
+    (function () {
+      var a = null;
+      ta1.addEventListener("mouseenter", function () { a = ta1 }); ta2.addEventListener("mouseenter", function () { a = ta2 });
+      ta1.addEventListener("scroll", function () { if (a === ta1) { ta2.scrollTop = ta1.scrollTop; ta2.scrollLeft = ta1.scrollLeft } });
+      ta2.addEventListener("scroll", function () { if (a === ta2) { ta1.scrollTop = ta2.scrollTop; ta1.scrollLeft = ta2.scrollLeft } })
+    })();
+
+    updateG1(); updateG2(); updateCounts();
+
+    function setupFileUpload(iid, tid, fn) { document.getElementById(iid).addEventListener("change", function (e) { var f = e.target.files[0]; if (!f) return; var r = new FileReader(); r.onload = function (ev) { document.getElementById(tid).value = ev.target.result; fn(); if (au.checked) triggerDiff() }; r.readAsText(f); e.target.value = "" }) }
+    setupFileUpload("file1", "text1", updateG1); setupFileUpload("file2", "text2", updateG2);
+
+    var pb = document.querySelectorAll("#precisionControl .segment-btn");
+    pb.forEach(function (b) { b.addEventListener("click", function () { pb.forEach(function (x) { x.classList.remove("active") }); b.classList.add("active"); diffPrecision = b.getAttribute("data-val"); if (document.getElementById("result").innerHTML !== "" || au.checked) triggerDiff() }) });
+    var lb = document.querySelectorAll("#layoutControl .segment-btn");
+    lb.forEach(function (b) { b.addEventListener("click", function () { lb.forEach(function (x) { x.classList.remove("active") }); b.classList.add("active"); layoutMode = b.getAttribute("data-val"); if (document.getElementById("result").innerHTML !== "" || au.checked) triggerDiff() }) });
+
+    document.getElementById("hideWhitespace").addEventListener("change", function (e) { hideWhitespace = e.target.checked; if (au.checked) triggerDiff() });
+    document.getElementById("ignoreCase").addEventListener("change", function (e) { ignoreCase = e.target.checked; if (au.checked) triggerDiff() });
+    document.getElementById("hideUnchanged").addEventListener("change", function (e) { hideUnchanged = e.target.checked; if (document.getElementById("result").innerHTML !== "") triggerDiff() });
+    document.getElementById("disableWrap").addEventListener("change", function (e) { wrapLines = !e.target.checked; document.querySelectorAll("textarea.input").forEach(function (t) { if (wrapLines) t.classList.add("wrap"); else t.classList.remove("wrap") }); if (document.getElementById("result").innerHTML !== "") triggerDiff() });
+
+    document.querySelectorAll(".transform-btn").forEach(function (b) { b.addEventListener("click", function () { applyTransform(b.getAttribute("data-target"), b.getAttribute("data-action")) }) });
+
+    document.getElementById("swapBtn").addEventListener("click", function () { var v1 = ta1.value, v2 = ta2.value; ta1.value = v2; ta2.value = v1; updateG1(); updateG2(); updateCounts(); if (au.checked) triggerDiff() });
+    document.getElementById("clearBtn").addEventListener("click", function () { ta1.value = ""; ta2.value = ""; document.getElementById("result").innerHTML = ""; updateG1(); updateG2(); updateCounts(); var n = document.getElementById("navBar"); if (n) n.style.display = "none" });
+    document.getElementById("findBtn").addEventListener("click", triggerDiff);
+
+    document.addEventListener("click", function (e) { if (e.target.id === "navFirst") goFirst(); if (e.target.id === "navPrev") goPrev(); if (e.target.id === "navNext") goNext(); if (e.target.id === "navLast") goLast() });
+  </script>
+</body>
+
+</html>
