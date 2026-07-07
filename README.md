@@ -1,6 +1,7 @@
 # DiffScan
 
-Fast, offline text diff tool with line/word/char precision and smart change navigation.
+Developed with AI assistance.
+Offline text diff tool with line/word/char precision and smart change navigation.
 
 ## Features
 
