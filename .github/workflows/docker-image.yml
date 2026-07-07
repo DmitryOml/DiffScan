@@ -2,13 +2,21 @@ name: Build Docker Image
 on:
   push:
     tags: ['*']
-
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v4
+      - name: Lowercase image name
+        id: image
+        run: echo "name=$(echo '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
       - uses: docker/build-push-action@v5
         with:
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:latest
+          tags: ${{ steps.image.outputs.name }}:latest
