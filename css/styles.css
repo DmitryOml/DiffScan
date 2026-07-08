@@ -36,7 +36,6 @@ h1.app-title {
   max-width: 1400px;
   margin: 0 auto;
   width: 100%;
-  flex: 0 0 auto;
   align-items: start
 }
 
@@ -285,6 +284,12 @@ textarea.input::placeholder {
   color: #1f2328
 }
 
+/* Оптимизация: состояние активной кнопки через CSS-класс вместо inline-стилей из JS */
+.btn-secondary.active {
+  background: #0969da;
+  color: #fff
+}
+
 .btn-find {
   padding: 7px 24px;
   background: #2da44e;
@@ -416,9 +421,6 @@ textarea.input::placeholder {
   background: #e8eaed
 }
 
-.diff-line:focus {
-  outline: none;
-}
 
 .merge-mode .diff-line.row-removed,
 .merge-mode .diff-line.row-added,
@@ -469,9 +471,6 @@ textarea.input::placeholder {
   background-color: rgba(9, 105, 218, 0.1);
 }
 
-.merge-block-top, .merge-block-bottom {
-  border: none !important;
-}
 
 .row-removed.merge-selected { background-color: #fbdada; }
 .row-added.merge-selected { background-color: #c9f0d2; }
