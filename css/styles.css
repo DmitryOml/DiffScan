@@ -36,7 +36,8 @@ h1.app-title {
   max-width: 1400px;
   margin: 0 auto;
   width: 100%;
-  flex: 0 0 auto
+  flex: 0 0 auto;
+  align-items: start
 }
 
 .panel {
@@ -323,13 +324,16 @@ textarea.input::placeholder {
 
 .diff-body {
   overflow: visible;
-  flex: 1;
-  min-height: auto
+  flex: 0 1 auto;
+  min-height: 0
 }
 
 .panel.result-panel {
   height: auto;
-  max-height: none
+  min-height: 0;
+  max-height: none;
+  flex: none;
+  overflow: visible
 }
 
 .diff-line {
@@ -417,6 +421,63 @@ textarea.input::placeholder {
   outline-offset: -1px;
   z-index: 1;
   position: relative
+}
+
+.merge-mode .diff-line.row-removed,
+.merge-mode .diff-line.row-added,
+.merge-mode .diff-line.row-modified {
+  cursor: pointer
+}
+
+.merge-mode .diff-line.row-removed:hover,
+.merge-mode .diff-line.row-added:hover,
+.merge-mode .diff-line.row-modified:hover {
+  outline: 2px solid #0969da;
+  outline-offset: -1px
+}
+
+.merge-mode .diff-line.row-equal {
+  cursor: default
+}
+
+.merge-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 1px solid #d0d7de;
+  background: #fff;
+  color: #57606a;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  box-shadow: 0 1px 3px rgba(0,0,0,.15);
+  transition: background .1s
+}
+
+.merge-btn:hover {
+  background: #0969da;
+  color: #fff;
+  border-color: #0969da
+}
+
+.merge-btn-left {
+  left: 4px
+}
+
+.merge-btn-right {
+  right: 4px
+}
+
+.diff-line.merge-selected {
+  outline: 2px solid #2da44e;
+  outline-offset: -1px
 }
 
 .mark-removed {

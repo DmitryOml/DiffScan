@@ -137,14 +137,22 @@ function renderSplit(c, dd, rm, ad, rl, rr) {
   var lL = document.createElement("span"); lL.className = "count-removed"; lL.textContent = rm + " removal" + (rm === 1 ? "" : "s"); hL.appendChild(lL);
   hL.appendChild(makeCopyBtn(rl)); pL.appendChild(hL);
   var bL = document.createElement("div"); bL.className = "diff-body";
-  for (var i = 0; i < dd.length; i++) { if (dd[i].type === "collapsed") bL.insertAdjacentHTML("beforeend", '<div class="diff-line row-collapsed"><span class="line-no"></span><span class="line-content">\u2026 ' + dd[i].count + ' unchanged \u2026</span></div>'); else bL.insertAdjacentHTML("beforeend", buildLineHtml(dd[i], "left")) }
+  for (var i = 0; i < dd.length; i++) {
+    if (dd[i].type === "collapsed") bL.insertAdjacentHTML("beforeend", '<div class="diff-line row-collapsed"><span class="line-no"></span><span class="line-content">\u2026 ' + dd[i].count + ' unchanged \u2026</span></div>');
+    else if (dd[i].type === "added") bL.insertAdjacentHTML("beforeend", '<div class="diff-line row-empty"><span class="line-no"></span><span class="line-content"></span></div>');
+    else bL.insertAdjacentHTML("beforeend", buildLineHtml(dd[i], "left"));
+  }
   pL.appendChild(bL);
   var pR = document.createElement("div"); pR.className = "panel result-panel"; pR.style.height = "auto";
   var hR = document.createElement("div"); hR.className = "panel-header";
   var lR = document.createElement("span"); lR.className = "count-added"; lR.textContent = ad + " addition" + (ad === 1 ? "" : "s"); hR.appendChild(lR);
   hR.appendChild(makeCopyBtn(rr)); pR.appendChild(hR);
   var bR = document.createElement("div"); bR.className = "diff-body";
-  for (var i = 0; i < dd.length; i++) { if (dd[i].type === "collapsed") bR.insertAdjacentHTML("beforeend", '<div class="diff-line row-collapsed"><span class="line-no"></span><span class="line-content">\u2026 ' + dd[i].count + ' unchanged \u2026</span></div>'); else bR.insertAdjacentHTML("beforeend", buildLineHtml(dd[i], "right")) }
+  for (var i = 0; i < dd.length; i++) {
+    if (dd[i].type === "collapsed") bR.insertAdjacentHTML("beforeend", '<div class="diff-line row-collapsed"><span class="line-no"></span><span class="line-content">\u2026 ' + dd[i].count + ' unchanged \u2026</span></div>');
+    else if (dd[i].type === "removed") bR.insertAdjacentHTML("beforeend", '<div class="diff-line row-empty"><span class="line-no"></span><span class="line-content"></span></div>');
+    else bR.insertAdjacentHTML("beforeend", buildLineHtml(dd[i], "right"));
+  }
   pR.appendChild(bR);
   sd.appendChild(pL); sd.appendChild(pR); c.appendChild(sd);
 }
@@ -255,7 +263,173 @@ document.getElementById("disableWrap").addEventListener("change", function (e) {
 document.querySelectorAll(".transform-btn").forEach(function (b) { b.addEventListener("click", function () { applyTransform(b.getAttribute("data-target"), b.getAttribute("data-action")) }) });
 
 document.getElementById("swapBtn").addEventListener("click", function () { var v1 = ta1.value, v2 = ta2.value; ta1.value = v2; ta2.value = v1; updateG1(); updateG2(); updateCounts(); if (au.checked) triggerDiff() });
-document.getElementById("clearBtn").addEventListener("click", function () { ta1.value = ""; ta2.value = ""; document.getElementById("result").innerHTML = ""; updateG1(); updateG2(); updateCounts(); var n = document.getElementById("navBar"); if (n) n.style.display = "none" });
+document.getElementById("clearBtn").addEventListener("click", function () { ta1.value = ""; ta2.value = ""; document.getElementById("result").innerHTML = ""; updateG1(); updateG2(); updateCounts(); var n = document.getElementById("navBar"); if (n) n.style.display = "none"; exitMergeMode() });
 document.getElementById("findBtn").addEventListener("click", triggerDiff);
 
 document.addEventListener("click", function (e) { if (e.target.id === "navFirst") goFirst(); if (e.target.id === "navPrev") goPrev(); if (e.target.id === "navNext") goNext(); if (e.target.id === "navLast") goLast() });
+
+var mergeMode = false;
+var activeMergeLine = null;
+
+document.getElementById("mergeBtn").addEventListener("click", function () {
+  if (mergeMode) { exitMergeMode() } else { enterMergeMode() }
+});
+
+function enterMergeMode() {
+  mergeMode = true;
+  var btn = document.getElementById("mergeBtn");
+  btn.classList.add("active");
+  btn.style.background = "#0969da";
+  btn.style.color = "#fff";
+  document.getElementById("result").classList.add("merge-mode");
+  activeMergeLine = null
+}
+
+function exitMergeMode() {
+  mergeMode = false;
+  var btn = document.getElementById("mergeBtn");
+  btn.classList.remove("active");
+  btn.style.background = "";
+  btn.style.color = "";
+  document.getElementById("result").classList.remove("merge-mode");
+  activeMergeLine = null;
+  clearMergeButtons()
+}
+
+function clearMergeButtons() {
+  document.querySelectorAll(".merge-btn").forEach(function (b) { b.remove() });
+  document.querySelectorAll(".merge-selected").forEach(function (r) { r.classList.remove("merge-selected") })
+}
+
+function getPanelSide(line) {
+  var split = line.closest(".split");
+  if (!split) return "left";
+  var panels = split.querySelectorAll(".result-panel");
+  if (panels.length >= 2 && line.closest(".result-panel") === panels[1]) return "right";
+  return "left"
+}
+
+function showMergeButtons(line) {
+  clearMergeButtons();
+  activeMergeLine = line;
+
+  var block = [];
+  var isRemoved = line.classList.contains("row-removed");
+  var isAdded = line.classList.contains("row-added");
+
+  var current = line;
+  if (isRemoved) {
+    while (current && current.classList.contains("row-removed")) {
+      block.push(current);
+      current = current.previousElementSibling;
+    }
+    block.reverse();
+    current = line.nextElementSibling;
+    while (current && current.classList.contains("row-removed")) {
+      block.push(current);
+      current = current.nextElementSibling;
+    }
+  } else if (isAdded) {
+    while (current && current.classList.contains("row-added")) {
+      block.push(current);
+      current = current.previousElementSibling;
+    }
+    block.reverse();
+    current = line.nextElementSibling;
+    while (current && current.classList.contains("row-added")) {
+      block.push(current);
+      current = current.nextElementSibling;
+    }
+  } else {
+    return;
+  }
+
+  block.forEach(function (l) { l.classList.add("merge-selected"); });
+
+  var content = line.querySelector(".line-content");
+  if (!content) return;
+  var btn = document.createElement("button");
+  btn.className = "merge-btn";
+  if (isRemoved) {
+    btn.classList.add("merge-btn-right");
+    btn.innerHTML = "&rarr;";
+    btn.title = "Copy block to right"
+  } else {
+    btn.classList.add("merge-btn-left");
+    btn.innerHTML = "&larr;";
+    btn.title = "Copy block to left"
+  }
+  btn.addEventListener("click", function (ev) {
+    ev.stopPropagation();
+    doMergeBlock(block, isRemoved ? "right" : "left")
+  });
+  content.style.position = "relative";
+  content.appendChild(btn)
+}
+
+document.getElementById("result").addEventListener("click", function (e) {
+  if (!mergeMode) return;
+  if (layoutMode !== "split") return;
+  if (e.target.classList && e.target.classList.contains("merge-btn")) return;
+  var line = e.target.closest(".diff-line");
+  if (!line) return;
+  var cls = line.className;
+  if (cls.indexOf("row-equal") !== -1 || cls.indexOf("row-empty") !== -1 || cls.indexOf("row-collapsed") !== -1) return;
+  if (activeMergeLine === line) { clearMergeButtons(); activeMergeLine = null; return }
+  showMergeButtons(line)
+});
+
+function doMergeBlock(block, targetSide) {
+  var dstTa, dstGutterId, dstId;
+  if (targetSide === "right") {
+    dstTa = ta2; dstGutterId = "gutter2"; dstId = "text2"
+  } else {
+    dstTa = ta1; dstGutterId = "gutter1"; dstId = "text1"
+  }
+
+  var blockText = block.map(function (l) {
+    var clone = l.querySelector(".line-content").cloneNode(true);
+    var btn = clone.querySelector(".merge-btn");
+    if (btn) btn.remove();
+    var t = clone.textContent;
+    return t === "\u00a0" ? "" : t;
+  }).join("\n");
+
+  var firstLine = block[0];
+  var domIndex = Array.from(firstLine.parentNode.children).indexOf(firstLine);
+
+  var srcPanel = firstLine.closest(".result-panel");
+  var split = firstLine.closest(".split");
+  var panels = Array.from(split.querySelectorAll(".result-panel"));
+  var targetPanel = panels[0] === srcPanel ? panels[1] : panels[0];
+  var targetBody = targetPanel.querySelector(".diff-body");
+
+  var targetChildren = targetBody.children;
+  var insertLineNo = 0;
+  for (var j = domIndex - 1; j >= 0; j--) {
+    var child = targetChildren[j];
+    var noEl = child.querySelector(".line-no");
+    if (noEl && noEl.textContent.trim() !== "") {
+      var num = parseInt(noEl.textContent, 10);
+      if (!isNaN(num)) {
+        insertLineNo = num;
+        break;
+      }
+    }
+  }
+
+  var dstLines = splitLines(dstTa.value);
+  while (dstLines.length < insertLineNo) {
+    dstLines.push("");
+  }
+
+  var args = [insertLineNo, 0].concat(blockText.split("\n"));
+  Array.prototype.splice.apply(dstLines, args);
+
+  dstTa.value = dstLines.join("\n");
+  updateInputGutter(dstId, dstGutterId);
+  updateCounts();
+  if (au.checked) triggerDiff();
+  clearMergeButtons();
+  activeMergeLine = null
+}
