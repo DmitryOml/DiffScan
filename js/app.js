@@ -1,6 +1,6 @@
 "use strict";
 
-var diffPrecision = "line", layoutMode = "split", hideWhitespace = false, ignoreCase = false, hideUnchanged = false, wrapLines = false;
+var diffPrecision = "smart", layoutMode = "split", hideWhitespace = false, ignoreCase = false, hideUnchanged = false, wrapLines = false;
 var changeIndex = -1, changeRows = [];
 
 function splitLines(t) { if (t === "") return [""]; return t.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n") }
@@ -298,7 +298,11 @@ function exitMergeMode() {
 
 function clearMergeButtons() {
   document.querySelectorAll(".merge-btn").forEach(function (b) { b.remove() });
-  document.querySelectorAll(".merge-selected").forEach(function (r) { r.classList.remove("merge-selected") })
+  document.querySelectorAll(".merge-selected").forEach(function (r) { 
+    r.classList.remove("merge-selected");
+    r.classList.remove("merge-block-top");
+    r.classList.remove("merge-block-bottom");
+  });
 }
 
 function getPanelSide(line) {
@@ -316,53 +320,55 @@ function showMergeButtons(line) {
   var block = [];
   var isRemoved = line.classList.contains("row-removed");
   var isAdded = line.classList.contains("row-added");
+  var isModified = line.classList.contains("row-modified");
+  var isLeft = getPanelSide(line) === "left";
 
   var current = line;
-  if (isRemoved) {
-    while (current && current.classList.contains("row-removed")) {
-      block.push(current);
-      current = current.previousElementSibling;
-    }
-    block.reverse();
-    current = line.nextElementSibling;
-    while (current && current.classList.contains("row-removed")) {
-      block.push(current);
-      current = current.nextElementSibling;
-    }
-  } else if (isAdded) {
-    while (current && current.classList.contains("row-added")) {
-      block.push(current);
-      current = current.previousElementSibling;
-    }
-    block.reverse();
-    current = line.nextElementSibling;
-    while (current && current.classList.contains("row-added")) {
-      block.push(current);
-      current = current.nextElementSibling;
-    }
-  } else {
-    return;
+  function getBlock(cls) {
+    var b = [];
+    var c = line;
+    while (c && c.classList.contains(cls)) { b.push(c); c = c.previousElementSibling; }
+    b.reverse();
+    c = line.nextElementSibling;
+    while (c && c.classList.contains(cls)) { b.push(c); c = c.nextElementSibling; }
+    return b;
   }
 
+  if (isRemoved) block = getBlock("row-removed");
+  else if (isAdded) block = getBlock("row-added");
+  else if (isModified) block = getBlock("row-modified");
+  else return;
+
+  // Add wrapper class to the first and last elements for block outline
+  block[0].classList.add("merge-block-top");
+  block[block.length - 1].classList.add("merge-block-bottom");
   block.forEach(function (l) { l.classList.add("merge-selected"); });
 
   var content = line.querySelector(".line-content");
   if (!content) return;
   var btn = document.createElement("button");
   btn.className = "merge-btn";
-  if (isRemoved) {
+  
+  // Dynamic color based on block type
+  if (isAdded) btn.style.backgroundColor = "#1a7f37";
+  else if (isRemoved) btn.style.backgroundColor = "#cf222e";
+  else btn.style.backgroundColor = "#d4a717";
+
+  if (isLeft) {
     btn.classList.add("merge-btn-right");
-    btn.innerHTML = "&rarr;";
+    btn.innerHTML = "Merge &rarr;";
     btn.title = "Copy block to right"
   } else {
     btn.classList.add("merge-btn-left");
-    btn.innerHTML = "&larr;";
+    btn.innerHTML = "&larr; Merge";
     btn.title = "Copy block to left"
   }
   btn.addEventListener("click", function (ev) {
     ev.stopPropagation();
-    doMergeBlock(block, isRemoved ? "right" : "left")
+    doMergeBlock(block, isLeft ? "right" : "left", isModified)
   });
+  
+  // Position it in the gutter/center area
   content.style.position = "relative";
   content.appendChild(btn)
 }
@@ -379,7 +385,7 @@ document.getElementById("result").addEventListener("click", function (e) {
   showMergeButtons(line)
 });
 
-function doMergeBlock(block, targetSide) {
+function doMergeBlock(block, targetSide, isModified) {
   var dstTa, dstGutterId, dstId;
   if (targetSide === "right") {
     dstTa = ta2; dstGutterId = "gutter2"; dstId = "text2"
@@ -404,27 +410,70 @@ function doMergeBlock(block, targetSide) {
   var targetPanel = panels[0] === srcPanel ? panels[1] : panels[0];
   var targetBody = targetPanel.querySelector(".diff-body");
 
-  var targetChildren = targetBody.children;
-  var insertLineNo = 0;
-  for (var j = domIndex - 1; j >= 0; j--) {
-    var child = targetChildren[j];
-    var noEl = child.querySelector(".line-no");
-    if (noEl && noEl.textContent.trim() !== "") {
-      var num = parseInt(noEl.textContent, 10);
-      if (!isNaN(num)) {
-        insertLineNo = num;
-        break;
+  var dstLines = splitLines(dstTa.value);
+
+  if (firstLine.classList.contains("row-modified")) {
+    var targetFirstChild = targetBody.children[domIndex];
+    var targetStartLineNo = 0;
+    if (targetFirstChild) {
+      var noEl = targetFirstChild.querySelector(".line-no");
+      if (noEl) {
+        var num = parseInt(noEl.textContent, 10);
+        if (!isNaN(num)) targetStartLineNo = num;
       }
     }
-  }
 
-  var dstLines = splitLines(dstTa.value);
-  while (dstLines.length < insertLineNo) {
-    dstLines.push("");
-  }
+    var insertIndex = targetStartLineNo > 0 ? targetStartLineNo - 1 : 0;
 
-  var args = [insertLineNo, 0].concat(blockText.split("\n"));
-  Array.prototype.splice.apply(dstLines, args);
+    while (dstLines.length < insertIndex) {
+      dstLines.push("");
+    }
+
+    var args = [insertIndex, block.length].concat(blockText.split("\n"));
+    Array.prototype.splice.apply(dstLines, args);
+  } else {
+  if (isModified) {
+    var targetFirstChild = targetBody.children[domIndex];
+    var targetStartLineNo = 0;
+    if (targetFirstChild) {
+      var noEl = targetFirstChild.querySelector(".line-no");
+      if (noEl) {
+        var num = parseInt(noEl.textContent, 10);
+        if (!isNaN(num)) targetStartLineNo = num;
+      }
+    }
+
+    var insertIndex = targetStartLineNo > 0 ? targetStartLineNo - 1 : 0;
+
+    while (dstLines.length < insertIndex) {
+      dstLines.push("");
+    }
+
+    var args = [insertIndex, block.length].concat(blockText.split("\n"));
+    Array.prototype.splice.apply(dstLines, args);
+  } else {
+    var targetChildren = targetBody.children;
+    var insertLineNo = 0;
+    for (var j = domIndex - 1; j >= 0; j--) {
+      var child = targetChildren[j];
+      var noEl = child.querySelector(".line-no");
+      if (noEl && noEl.textContent.trim() !== "") {
+        var num = parseInt(noEl.textContent, 10);
+        if (!isNaN(num)) {
+          insertLineNo = num;
+          break;
+        }
+      }
+    }
+
+    while (dstLines.length < insertLineNo) {
+      dstLines.push("");
+    }
+
+    var args = [insertLineNo, 0].concat(blockText.split("\n"));
+    Array.prototype.splice.apply(dstLines, args);
+  }
+  }
 
   dstTa.value = dstLines.join("\n");
   updateInputGutter(dstId, dstGutterId);

@@ -394,7 +394,7 @@ textarea.input::placeholder {
 }
 
 .row-modified {
-  background: #fff8d6
+  background: #fff
 }
 
 .row-empty {
@@ -416,11 +416,8 @@ textarea.input::placeholder {
   background: #e8eaed
 }
 
-.diff-line.highlight-change {
-  outline: 2px solid #0969da;
-  outline-offset: -1px;
-  z-index: 1;
-  position: relative
+.diff-line:focus {
+  outline: none;
 }
 
 .merge-mode .diff-line.row-removed,
@@ -432,8 +429,7 @@ textarea.input::placeholder {
 .merge-mode .diff-line.row-removed:hover,
 .merge-mode .diff-line.row-added:hover,
 .merge-mode .diff-line.row-modified:hover {
-  outline: 2px solid #0969da;
-  outline-offset: -1px
+  outline: none;
 }
 
 .merge-mode .diff-line.row-equal {
@@ -444,56 +440,65 @@ textarea.input::placeholder {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 24px;
-  height: 24px;
-  border-radius: 4px;
-  border: 1px solid #d0d7de;
-  background: #fff;
-  color: #57606a;
-  font-size: 14px;
-  font-weight: 700;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10;
-  box-shadow: 0 1px 3px rgba(0,0,0,.15);
-  transition: background .1s
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transition: transform 0.2s;
+  white-space: nowrap;
 }
 
 .merge-btn:hover {
-  background: #0969da;
-  color: #fff;
-  border-color: #0969da
+  transform: translateY(-50%) scale(1.1);
 }
 
+/* Убираем все виды обводок для выделенного блока */
+.diff-line.merge-selected {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  background-color: rgba(9, 105, 218, 0.1);
+}
+
+.merge-block-top, .merge-block-bottom {
+  border: none !important;
+}
+
+.row-removed.merge-selected { background-color: #fbdada; }
+.row-added.merge-selected { background-color: #c9f0d2; }
+.row-modified.merge-selected { background-color: #f2f2f2; }
+
 .merge-btn-left {
-  left: 4px
+  left: -40px;
 }
 
 .merge-btn-right {
-  right: 4px
-}
-
-.diff-line.merge-selected {
-  outline: 2px solid #2da44e;
-  outline-offset: -1px
+  right: -40px;
 }
 
 .mark-removed {
-  background: #ff4d4f;
-  color: #fff;
-  font-weight: 700;
+  background: #ffc0c0;
+  color: #333;
+  font-weight: 500;
   border-radius: 2px;
-  padding: 0 1px
+  padding: 0 2px
 }
 
 .mark-added {
-  background: #1a7f37;
-  color: #fff;
-  font-weight: 700;
+  background: #acf2bd;
+  color: #333;
+  font-weight: 500;
   border-radius: 2px;
-  padding: 0 1px
+  padding: 0 2px
 }
 
 .nav-bar {
