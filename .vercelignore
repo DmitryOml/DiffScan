@@ -1,0 +1,23 @@
+# IDE / Editor folders
+.vscode/
+.idea/
+.DS_Store
+
+# Vercel
+.vercel
+
+# System files
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Logs and temporary files
+*.log
+npm-debug.log*
+yarn-error.log*
+*.tmp
+*.bak
+
+# Server/DevOps configuration
+# nginx.conf is only needed for the Docker deployment, not for Vercel hosting
+nginx.conf

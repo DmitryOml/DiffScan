@@ -624,10 +624,130 @@ textarea.input::placeholder {
     height: 30vh
   }
 
-  .scroll-btn {
-    width: 32px;
-    height: 32px;
-    font-size: 16px;
-    right: 10px
+    .scroll-btn {
+      width: 32px;
+      height: 32px;
+      font-size: 16px;
+      right: 10px
+    }
   }
 }
+
+/* Стили для SEO блока и FAQ */
+.seo-section {
+  max-width: 900px;
+  margin: 20px auto 10px;
+  background: #fff;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .02);
+  padding: 20px 24px;
+  flex: 0 0 auto;
+}
+
+.seo-container {
+  color: #24292f;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+.seo-container h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #1f2328;
+  border-bottom: 1px solid #eaeef2;
+  padding-bottom: 6px;
+}
+
+.seo-container h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 18px;
+  margin-bottom: 8px;
+  color: #24292f;
+}
+
+.seo-container p {
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: 12px;
+  color: #57606a;
+}
+
+.seo-container ul {
+  margin-left: 20px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: #57606a;
+  line-height: 1.6;
+}
+
+.seo-container li {
+  margin-bottom: 6px;
+}
+
+.faq-accordion details {
+  border: 1px solid #eaeef2;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  background: #fafbfc;
+  transition: background .15s;
+}
+
+.faq-accordion details[open] {
+  background: #fff;
+}
+
+.faq-accordion summary {
+  padding: 10px 14px;
+  font-weight: 600;
+  font-size: 13px;
+  color: #24292f;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+}
+
+.faq-accordion summary:hover {
+  color: #0969da;
+}
+
+.faq-accordion details p {
+  padding: 0 14px 12px;
+  margin: 0;
+  color: #57606a;
+  font-size: 13px;
+}
+
+/* Стили для ссылок и навигации на отдельной странице */
+.footer-link {
+  color: #0969da;
+  text-decoration: none;
+  font-weight: 500;
+  margin-left: 5px;
+}
+
+.footer-link:hover {
+  text-decoration: underline;
+}
+
+.about-page-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.back-btn {
+  display: inline-block;
+  color: #0969da;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+.back-btn:hover {
+  text-decoration: underline;
+}
+
+
