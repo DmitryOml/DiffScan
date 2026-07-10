@@ -12,6 +12,100 @@
 </head>
 
 <body>
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+    <symbol id="icon-sparkle" viewBox="0 0 16 16"><path d="M7.198.57c.275-.752 1.34-.752 1.615 0l.849 2.317a5.819 5.819 0 0 0 3.462 3.463l2.317.848c.753.275.753 1.34 0 1.615l-2.317.849a5.815 5.815 0 0 0-3.462 3.462l-.849 2.317c-.275.753-1.34.753-1.615 0l-.848-2.317a5.819 5.819 0 0 0-3.463-3.462L.57 8.813c-.752-.275-.752-1.34 0-1.615l2.317-.848A5.823 5.823 0 0 0 6.35 2.887L7.198.57Zm.562 2.833A7.323 7.323 0 0 1 3.403 7.76l-.673.246.673.246a7.324 7.324 0 0 1 4.357 4.356l.246.673.246-.673a7.322 7.322 0 0 1 4.356-4.356l.673-.246-.673-.246a7.324 7.324 0 0 1-4.356-4.357l-.246-.673-.246.673Z"/></symbol>
+    <symbol id="icon-chevron-down" viewBox="0 0 16 16"><path d="M12.78 5.22a.749.749 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.06 0L3.22 6.28a.749.749 0 1 1 1.06-1.06L8 8.939l3.72-3.719a.749.749 0 0 1 1.06 0Z"/></symbol>
+    <symbol id="icon-columns" viewBox="0 0 16 16"><path d="M2.75 0h2.5C6.216 0 7 .784 7 1.75v12.5A1.75 1.75 0 0 1 5.25 16h-2.5A1.75 1.75 0 0 1 1 14.25V1.75C1 .784 1.784 0 2.75 0Zm8 0h2.5C14.216 0 15 .784 15 1.75v12.5A1.75 1.75 0 0 1 13.25 16h-2.5A1.75 1.75 0 0 1 9 14.25V1.75C9 .784 9.784 0 10.75 0ZM2.5 1.75v12.5c0 .138.112.25.25.25h2.5a.25.25 0 0 0 .25-.25V1.75a.25.25 0 0 0-.25-.25h-2.5a.25.25 0 0 0-.25.25Zm8 0v12.5c0 .138.112.25.25.25h2.5a.25.25 0 0 0 .25-.25V1.75a.25.25 0 0 0-.25-.25h-2.5a.25.25 0 0 0-.25.25Z"/></symbol>
+    <symbol id="icon-list-unordered" viewBox="0 0 16 16"><path d="M5.75 2.5h8.5a.75.75 0 0 1 0 1.5h-8.5a.75.75 0 0 1 0-1.5Zm0 5h8.5a.75.75 0 0 1 0 1.5h-8.5a.75.75 0 0 1 0-1.5Zm0 5h8.5a.75.75 0 0 1 0 1.5h-8.5a.75.75 0 0 1 0-1.5ZM2 14a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm1-6a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM2 4a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"/></symbol>
+    <symbol id="icon-moon" viewBox="0 0 16 16"><path d="M9.598 1.591a.749.749 0 0 1 .785-.175 7.001 7.001 0 1 1-8.967 8.967.75.75 0 0 1 .961-.96 5.5 5.5 0 0 0 7.046-7.046.75.75 0 0 1 .175-.786Zm1.616 1.945a7 7 0 0 1-7.678 7.678 5.499 5.499 0 1 0 7.678-7.678Z"/></symbol>
+    <symbol id="icon-arrow-switch" viewBox="0 0 16 16"><path d="M5.22 14.78a.75.75 0 0 0 1.06-1.06L4.56 12h8.69a.75.75 0 0 0 0-1.5H4.56l1.72-1.72a.75.75 0 0 0-1.06-1.06l-3 3a.75.75 0 0 0 0 1.06l3 3Zm5.56-6.5a.75.75 0 1 1-1.06-1.06l1.72-1.72H2.75a.75.75 0 0 1 0-1.5h8.69L9.72 2.28a.75.75 0 0 1 1.06-1.06l3 3a.75.75 0 0 1 0 1.06l-3 3Z"/></symbol>
+    <symbol id="icon-git-compare" viewBox="0 0 16 16"><path d="M9.573.677A.25.25 0 0 1 10 .854V2.5h1A2.5 2.5 0 0 1 13.5 5v5.628a2.251 2.251 0 1 1-1.5 0V5a1 1 0 0 0-1-1h-1v1.646a.25.25 0 0 1-.427.177L7.177 3.427a.25.25 0 0 1 0-.354ZM6 12v-1.646a.25.25 0 0 1 .427-.177l2.396 2.396a.25.25 0 0 1 0 .354l-2.396 2.396A.25.25 0 0 1 6 15.146V13.5H5A2.5 2.5 0 0 1 2.5 11V5.372a2.25 2.25 0 1 1 1.5 0V11a1 1 0 0 0 1 1ZM4 3.25a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0ZM12.75 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"/></symbol>
+    <symbol id="icon-trash" viewBox="0 0 16 16"><path d="M11 1.75V3h2.25a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1 0-1.5H5V1.75C5 .784 5.784 0 6.75 0h2.5C10.216 0 11 .784 11 1.75ZM4.496 6.675l.66 6.6a.25.25 0 0 0 .249.225h5.19a.25.25 0 0 0 .249-.225l.66-6.6a.75.75 0 0 1 1.492.149l-.66 6.6A1.748 1.748 0 0 1 10.595 15h-5.19a1.75 1.75 0 0 1-1.741-1.575l-.66-6.6a.75.75 0 1 1 1.492-.15ZM6.5 1.75V3h3V1.75a.25.25 0 0 0-.25-.25h-2.5a.25.25 0 0 0-.25.25Z"/></symbol>
+    <symbol id="icon-upload" viewBox="0 0 16 16"><path d="M2.75 14A1.75 1.75 0 0 1 1 12.25v-2.5a.75.75 0 0 1 1.5 0v2.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25v-2.5a.75.75 0 0 1 1.5 0v2.5A1.75 1.75 0 0 1 13.25 14Z"/><path d="M11.78 4.72a.749.749 0 1 1-1.06 1.06L8.75 3.811V9.5a.75.75 0 0 1-1.5 0V3.811L5.28 5.78a.749.749 0 1 1-1.06-1.06l3.25-3.25a.749.749 0 0 1 1.06 0l3.25 3.25Z"/></symbol>
+  </svg>
+
+  <div class="settings-bar collapsed" id="settingsBar">
+    <div class="sidebar-header">
+      <button id="toggleSettings" class="settings-toggle-btn" title="Toggle Settings"><span class="hamburger"><span></span><span></span><span></span></span></button>
+      <span class="sidebar-title">Diff settings</span>
+      <div class="sidebar-actions">
+        <button id="pinSettings" class="sidebar-pin-btn" title="Keep open">
+          <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+            <path d="M11 1.5a.5.5 0 0 1 .5.5v4.5l2 2v1h-5v4l-.5 1-.5-1v-4H3v-1l2-2V2a.5.5 0 0 1 .5-.5h5.5Z"/>
+          </svg>
+        </button>
+        <button id="closeSettings" class="sidebar-close-btn" title="Close">&times;</button>
+      </div>
+    </div>
+    <div class="settings-content">
+      <div class="setting-group">
+        <div class="setting-label">Precision</div>
+        <div class="segmented-control" id="precisionControl">
+          <button type="button" class="segment-btn active" data-val="smart">Smart</button>
+          <button type="button" class="segment-btn" data-val="line">Line</button>
+          <button type="button" class="segment-btn" data-val="word">Word</button>
+          <button type="button" class="segment-btn" data-val="char">Char</button>
+        </div>
+        <div class="setting-desc">Smart groups related changes automatically.</div>
+      </div>
+
+      <div class="setting-group">
+        <div class="setting-label">Layout</div>
+        <div class="segmented-control" id="layoutControl">
+          <button type="button" class="segment-btn" data-val="split"><svg class="icon" aria-hidden="true"><use href="#icon-columns"/></svg> Split</button>
+          <button type="button" class="segment-btn" data-val="unified"><svg class="icon" aria-hidden="true"><use href="#icon-list-unordered"/></svg> Unified</button>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="setting-group">
+        <div class="setting-label">Display</div>
+        <label class="toggle-row">
+          <span>Hide whitespace</span>
+          <span class="toggle-switch"><input type="checkbox" id="hideWhitespace"><span class="toggle-knob"></span></span>
+        </label>
+        <label class="toggle-row">
+          <span>Ignore case</span>
+          <span class="toggle-switch"><input type="checkbox" id="ignoreCase"><span class="toggle-knob"></span></span>
+        </label>
+        <label class="toggle-row">
+          <span>Hide unchanged</span>
+          <span class="toggle-switch"><input type="checkbox" id="hideUnchanged"><span class="toggle-knob"></span></span>
+        </label>
+        <label class="toggle-row">
+          <span>Disable wrap</span>
+          <span class="toggle-switch"><input type="checkbox" id="disableWrap" checked><span class="toggle-knob"></span></span>
+        </label>
+        <label class="toggle-row">
+          <span>Auto-update</span>
+          <span class="toggle-switch"><input type="checkbox" id="autoUpdate" checked><span class="toggle-knob"></span></span>
+        </label>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="setting-group">
+        <label class="toggle-row">
+          <span><svg class="icon" aria-hidden="true"><use href="#icon-moon"/></svg> Dark mode</span>
+          <span class="toggle-switch"><input type="checkbox" id="themeToggle"><span class="toggle-knob"></span></span>
+        </label>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="setting-group">
+        <label class="toggle-row">
+          <span><svg class="icon" aria-hidden="true"><use href="#icon-arrow-switch"/></svg> Merge Mode</span>
+          <span class="toggle-switch"><input type="checkbox" id="mergeBtn"><span class="toggle-knob"></span></span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-overlay" id="settingsOverlay"></div>
+
+  <div class="main-content">
   <h1 class="app-title">DiffScan</h1>
 
   <div class="split" id="inputSplit">
@@ -19,7 +113,7 @@
       <div class="panel-header">
         <span>Original text</span>
         <div class="header-actions">
-          <label class="header-action-btn">Open file <input type="file" id="file1" style="display:none"
+          <label class="header-action-btn" title="Open file"><svg width="16" height="16" class="icon" aria-hidden="true"><use href="#icon-upload"/></svg><input type="file" id="file1" style="display:none"
               accept=".txt,.js,.html,.css,.json,.md,.csv,.py,.sh,.ts,.jsx,.tsx"></label>
         </div>
       </div>
@@ -29,13 +123,18 @@
       </div>
       <div class="status-bar">
         <span id="count1">Lines: 1 &middot; Chars: 0</span>
-        <div class="transform-menu">
-          <button class="transform-btn" data-target="text1" data-action="trim">Trim</button>
-          <button class="transform-btn" data-target="text1" data-action="upper">UPPER</button>
-          <button class="transform-btn" data-target="text1" data-action="lower">lower</button>
-          <button class="transform-btn" data-target="text1" data-action="sort">Sort</button>
-          <button class="transform-btn" data-target="text1" data-action="unique">Unique</button>
-          <button class="transform-btn" data-target="text1" data-action="removeEmpty">Rm empty</button>
+        <div class="transform-wrap">
+          <button class="transform-btn" data-target="text1">
+            <svg class="icon" aria-hidden="true"><use href="#icon-sparkle"/></svg>Transform<svg class="icon" aria-hidden="true"><use href="#icon-chevron-down"/></svg>
+          </button>
+          <div class="transform-menu">
+            <button data-action="trim">Trim whitespace</button>
+            <button data-action="upper">UPPERCASE</button>
+            <button data-action="lower">lowercase</button>
+            <button data-action="sort">Sort lines</button>
+            <button data-action="unique">Remove duplicates</button>
+            <button data-action="removeEmpty">Remove empty lines</button>
+          </div>
         </div>
       </div>
     </div>
@@ -43,7 +142,7 @@
       <div class="panel-header">
         <span>Changed text</span>
         <div class="header-actions">
-          <label class="header-action-btn">Open file <input type="file" id="file2" style="display:none"
+          <label class="header-action-btn" title="Open file"><svg width="16" height="16" class="icon" aria-hidden="true"><use href="#icon-upload"/></svg><input type="file" id="file2" style="display:none"
               accept=".txt,.js,.html,.css,.json,.md,.csv,.py,.sh,.ts,.jsx,.tsx"></label>
         </div>
       </div>
@@ -53,62 +152,82 @@
       </div>
       <div class="status-bar">
         <span id="count2">Lines: 1 &middot; Chars: 0</span>
-        <div class="transform-menu">
-          <button class="transform-btn" data-target="text2" data-action="trim">Trim</button>
-          <button class="transform-btn" data-target="text2" data-action="upper">UPPER</button>
-          <button class="transform-btn" data-target="text2" data-action="lower">lower</button>
-          <button class="transform-btn" data-target="text2" data-action="sort">Sort</button>
-          <button class="transform-btn" data-target="text2" data-action="unique">Unique</button>
-          <button class="transform-btn" data-target="text2" data-action="removeEmpty">Rm empty</button>
+        <div class="transform-wrap">
+          <button class="transform-btn" data-target="text2">
+            <svg class="icon" aria-hidden="true"><use href="#icon-sparkle"/></svg>Transform<svg class="icon" aria-hidden="true"><use href="#icon-chevron-down"/></svg>
+          </button>
+          <div class="transform-menu">
+            <button data-action="trim">Trim whitespace</button>
+            <button data-action="upper">UPPERCASE</button>
+            <button data-action="lower">lowercase</button>
+            <button data-action="sort">Sort lines</button>
+            <button data-action="unique">Remove duplicates</button>
+            <button data-action="removeEmpty">Remove empty lines</button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="settings-bar">
-    <div class="setting-group">
-      <span class="setting-label">Precision:</span>
-      <div class="segmented-control" id="precisionControl">
-        <button type="button" class="segment-btn active" data-val="smart">Smart</button>
-        <button type="button" class="segment-btn" data-val="line">Line</button>
-        <button type="button" class="segment-btn" data-val="word">Word</button>
-        <button type="button" class="segment-btn" data-val="char">Char</button>
-      </div>
-    </div>
-    <div class="setting-group">
-      <span class="setting-label">Layout:</span>
-      <div class="segmented-control" id="layoutControl">
-        <button type="button" class="segment-btn active" data-val="split">Split</button>
-        <button type="button" class="segment-btn" data-val="unified">Unified</button>
-      </div>
-    </div>
-    <div class="setting-group">
-      <label class="checkbox-label"><input type="checkbox" id="hideWhitespace"> Hide whitespace</label>
-      <label class="checkbox-label"><input type="checkbox" id="ignoreCase"> Ignore case</label>
-      <label class="checkbox-label"><input type="checkbox" id="hideUnchanged"> Hide unchanged</label>
-      <label class="checkbox-label"><input type="checkbox" id="disableWrap" checked> Disable wrap</label>
-      <label class="checkbox-label"><input type="checkbox" id="autoUpdate" checked> Auto-update</label>
-    </div>
-  </div>
-
-  <div class="control-bar">
-    <button id="swapBtn" class="btn-secondary" type="button">Swap</button>
-    <button id="findBtn" class="btn-find" type="button">Find difference</button>
-    <button id="mergeBtn" class="btn-secondary" type="button">Merge Mode</button>
-    <button id="clearBtn" class="btn-secondary" type="button">Clear</button>
+  <div class="actions">
+    <button id="swapBtn" class="btn btn-secondary" type="button"><svg class="icon" aria-hidden="true"><use href="#icon-arrow-switch"/></svg>Swap</button>
+    <button id="findBtn" class="btn btn-primary" type="button"><svg class="icon" aria-hidden="true"><use href="#icon-git-compare"/></svg>Find difference</button>
+    <button id="clearBtn" class="btn btn-secondary" type="button"><svg class="icon" aria-hidden="true"><use href="#icon-trash"/></svg>Clear</button>
   </div>
 
   <div id="navBar" class="nav-bar" style="display:none"><button id="navFirst" class="nav-btn">&laquo;</button><button
       id="navPrev" class="nav-btn">&lsaquo;</button><span id="navCount" class="nav-count">0/0</span><button id="navNext"
       class="nav-btn">&rsaquo;</button><button id="navLast" class="nav-btn">&raquo;</button></div>
-  
+
   <div id="result"></div>
+
+  <div id="donateModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="document.getElementById('donateModal').style.display='none'">&times;</span>
+      <h2>Support DiffScan</h2>
+      <p>If you like this tool, consider supporting it!</p>
+      <select class="donate-select" onchange="showDonateOption(this.value)">
+        <option value="usdt">USDT (1 USDT - TRC20)</option>
+        <option value="ton">TON (1 GRAM)</option>
+        <option value="btc">Bitcoin (0.00002 BTC)</option>
+      </select>
+      <div id="usdt" class="crypto-box active">
+        <strong>TAwLYvvDw4D1DaVEzzkoVvyqt62MdVChVR</strong>
+        <br>
+        <img src="images/usdt_qr.png" alt="USDT QR Code" style="width:120px;height:120px;margin-top:10px;">
+        <br>
+        <a href="https://link.trustwallet.com/send?address=TAwLYvvDw4D1DaVEzzkoVvyqt62MdVChVR&asset=c195_tTR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t&value=1000000&amount=1" style="display:inline-block; margin-top:5px; color: #0969da; text-decoration: underline;" target="_blank" rel="noopener">Pay 1 USDT via Trust Wallet</a>
+      </div>
+      <div id="ton" class="crypto-box">
+        <strong>UQBsTMOlkU2AvpgJrQNJcYbTaYyanWSy88O6T2VURMm_118b</strong>
+        <br>
+        <img src="images/ton_qr.jpg" alt="TON QR Code" style="width:120px;height:120px;margin-top:10px;">
+        <br>
+        <a href="https://link.trustwallet.com/send?asset=c607&amount=1&address=UQBsTMOlkU2AvpgJrQNJcYbTaYyanWSy88O6T2VURMm_118b&value=1000000000" style="display:inline-block; margin-top:5px; color: #0969da; text-decoration: underline;" target="_blank" rel="noopener">Pay 1 GRAM via Trust Wallet</a>
+      </div>
+      <div id="btc" class="crypto-box">
+        <strong>bc1qgqddmksece2casl4lc9fu52gnhgtejpltxeht6</strong>
+        <br>
+        <img src="images/bitc_qr.jpg" alt="Bitcoin QR Code" style="width:120px;height:120px;margin-top:10px;">
+        <br>
+        <a href="https://link.trustwallet.com/send?value=2000&amount=0.00002&address=bc1qgqddmksece2casl4lc9fu52gnhgtejpltxeht6&asset=c0" style="display:inline-block; margin-top:5px; color: #0969da; text-decoration: underline;" target="_blank" rel="noopener">Pay 0.00002 BTC via Trust Wallet</a>
+      </div>
+    </div>
+  </div>
 
   <p class="footer-note">DiffScan ver. 1.5.0 &middot; <a href="about.html" class="footer-link">About & FAQ</a></p>
   <button class="scroll-btn scroll-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#8593;</button>
   <button class="scroll-btn scroll-bottom-btn"
     onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})">&#8595;</button>
 
+  </div>
+
+  <script>
+    function showDonateOption(id) {
+      document.querySelectorAll('.crypto-box').forEach(function(box) { box.classList.remove('active') });
+      document.getElementById(id).classList.add('active');
+    }
+  </script>
   <script src="js/app.js"></script>
 </body>
 

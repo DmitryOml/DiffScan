@@ -5,6 +5,7 @@
 
 # Vercel
 .vercel
+.vercelignore
 
 # System files
 Thumbs.db
@@ -21,3 +22,6 @@ yarn-error.log*
 # Server/DevOps configuration
 # nginx.conf is only needed for the Docker deployment, not for Vercel hosting
 nginx.conf
+README.md
+Dockerfile
+AGENTS.md
