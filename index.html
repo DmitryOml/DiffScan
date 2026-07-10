@@ -22,6 +22,10 @@
     <symbol id="icon-git-compare" viewBox="0 0 16 16"><path d="M9.573.677A.25.25 0 0 1 10 .854V2.5h1A2.5 2.5 0 0 1 13.5 5v5.628a2.251 2.251 0 1 1-1.5 0V5a1 1 0 0 0-1-1h-1v1.646a.25.25 0 0 1-.427.177L7.177 3.427a.25.25 0 0 1 0-.354ZM6 12v-1.646a.25.25 0 0 1 .427-.177l2.396 2.396a.25.25 0 0 1 0 .354l-2.396 2.396A.25.25 0 0 1 6 15.146V13.5H5A2.5 2.5 0 0 1 2.5 11V5.372a2.25 2.25 0 1 1 1.5 0V11a1 1 0 0 0 1 1ZM4 3.25a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0ZM12.75 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"/></symbol>
     <symbol id="icon-trash" viewBox="0 0 16 16"><path d="M11 1.75V3h2.25a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1 0-1.5H5V1.75C5 .784 5.784 0 6.75 0h2.5C10.216 0 11 .784 11 1.75ZM4.496 6.675l.66 6.6a.25.25 0 0 0 .249.225h5.19a.25.25 0 0 0 .249-.225l.66-6.6a.75.75 0 0 1 1.492.149l-.66 6.6A1.748 1.748 0 0 1 10.595 15h-5.19a1.75 1.75 0 0 1-1.741-1.575l-.66-6.6a.75.75 0 1 1 1.492-.15ZM6.5 1.75V3h3V1.75a.25.25 0 0 0-.25-.25h-2.5a.25.25 0 0 0-.25.25Z"/></symbol>
     <symbol id="icon-upload" viewBox="0 0 16 16"><path d="M2.75 14A1.75 1.75 0 0 1 1 12.25v-2.5a.75.75 0 0 1 1.5 0v2.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25v-2.5a.75.75 0 0 1 1.5 0v2.5A1.75 1.75 0 0 1 13.25 14Z"/><path d="M11.78 4.72a.749.749 0 1 1-1.06 1.06L8.75 3.811V9.5a.75.75 0 0 1-1.5 0V3.811L5.28 5.78a.749.749 0 1 1-1.06-1.06l3.25-3.25a.749.749 0 0 1 1.06 0l3.25 3.25Z"/></symbol>
+    <symbol id="icon-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3.5"/><rect x="7" y="1" width="2" height="2.5" rx=".5"/><rect x="7" y="12.5" width="2" height="2.5" rx=".5"/><rect x="1" y="7" width="2.5" height="2" rx=".5"/><rect x="12.5" y="7" width="2.5" height="2" rx=".5"/></symbol>
+    <symbol id="icon-line" viewBox="0 0 16 16"><path d="M2 10h7l4-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-word" viewBox="0 0 16 16"><path d="M3 5h10M5 3v10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="icon-char" viewBox="0 0 16 16"><path d="M8 1L1 14h3l1-4h6l1 4h3L8 1zM5 9l3-5 3 5H9l-1-2-1 2H5z"/></symbol>
   </svg>
 
   <div class="settings-bar collapsed" id="settingsBar">
@@ -38,6 +42,19 @@
       </div>
     </div>
     <div class="settings-content">
+      <div class="section-divider"></div>
+
+      <div class="setting-group">
+        <div class="setting-label">Theme</div>
+        <div class="theme-selector" id="themeSelector">
+          <div class="theme-indicator" id="themeIndicator"></div>
+          <button type="button" class="theme-btn" data-theme="light"><svg class="icon" aria-hidden="true"><use href="#icon-sun"/></svg> Light</button>
+          <button type="button" class="theme-btn" data-theme="dark"><svg class="icon" aria-hidden="true"><use href="#icon-moon"/></svg> Dark</button>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+
       <div class="setting-group">
         <div class="setting-label">Precision</div>
         <div class="segmented-control" id="precisionControl">
@@ -51,9 +68,21 @@
 
       <div class="setting-group">
         <div class="setting-label">Layout</div>
-        <div class="segmented-control" id="layoutControl">
-          <button type="button" class="segment-btn" data-val="split"><svg class="icon" aria-hidden="true"><use href="#icon-columns"/></svg> Split</button>
-          <button type="button" class="segment-btn" data-val="unified"><svg class="icon" aria-hidden="true"><use href="#icon-list-unordered"/></svg> Unified</button>
+        <div class="theme-selector" id="layoutSelector">
+          <div class="theme-indicator" id="layoutIndicator"></div>
+          <button type="button" class="theme-btn" data-val="split"><svg class="icon" aria-hidden="true"><use href="#icon-columns"/></svg> Split</button>
+          <button type="button" class="theme-btn" data-val="unified"><svg class="icon" aria-hidden="true"><use href="#icon-list-unordered"/></svg> Unified</button>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="setting-group">
+        <div class="setting-label">Merge Mode</div>
+        <div class="theme-selector" id="mergeSelector">
+          <div class="theme-indicator" id="mergeIndicator"></div>
+          <button type="button" class="theme-btn" data-val="off"><svg class="icon" aria-hidden="true"><use href="#icon-git-compare"/></svg> View</button>
+          <button type="button" class="theme-btn" data-val="on"><svg class="icon" aria-hidden="true"><use href="#icon-arrow-switch"/></svg> Merge</button>
         </div>
       </div>
 
@@ -80,24 +109,6 @@
         <label class="toggle-row">
           <span>Auto-update</span>
           <span class="toggle-switch"><input type="checkbox" id="autoUpdate" checked><span class="toggle-knob"></span></span>
-        </label>
-      </div>
-
-      <div class="section-divider"></div>
-
-      <div class="setting-group">
-        <label class="toggle-row">
-          <span><svg class="icon" aria-hidden="true"><use href="#icon-moon"/></svg> Dark mode</span>
-          <span class="toggle-switch"><input type="checkbox" id="themeToggle"><span class="toggle-knob"></span></span>
-        </label>
-      </div>
-
-      <div class="section-divider"></div>
-
-      <div class="setting-group">
-        <label class="toggle-row">
-          <span><svg class="icon" aria-hidden="true"><use href="#icon-arrow-switch"/></svg> Merge Mode</span>
-          <span class="toggle-switch"><input type="checkbox" id="mergeBtn"><span class="toggle-knob"></span></span>
         </label>
       </div>
     </div>

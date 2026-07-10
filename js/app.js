@@ -364,9 +364,30 @@ setupFileUpload("file1", "text1", updateG1); setupFileUpload("file2", "text2", u
 
 var pb = document.querySelectorAll("#precisionControl .segment-btn");
 pb.forEach(function (b) { b.addEventListener("click", function () { pb.forEach(function (x) { x.classList.remove("active") }); b.classList.add("active"); diffPrecision = b.getAttribute("data-val"); if (resultEl.innerHTML !== "" || au.checked) triggerDiff() }) });
-var lb = document.querySelectorAll("#layoutControl .segment-btn");
-lb.forEach(function (b) { b.addEventListener("click", function () { lb.forEach(function (x) { x.classList.remove("active") }); b.classList.add("active"); layoutMode = b.getAttribute("data-val"); if (resultEl.innerHTML !== "" || au.checked) triggerDiff() }) });
-lb.forEach(function (b) { if (b.getAttribute("data-val") === layoutMode) b.classList.add("active"); else b.classList.remove("active") });
+(function() {
+  var layoutBtns = document.querySelectorAll("#layoutSelector .theme-btn");
+  var layoutIndicator = document.getElementById("layoutIndicator");
+
+  function setLayout(val) {
+    layoutMode = val;
+    layoutIndicator.className = "theme-indicator" + (val === "unified" ? " dark" : " light");
+    layoutBtns.forEach(function(b) {
+      b.classList.toggle("active", b.getAttribute("data-val") === val);
+    });
+    if (resultEl.innerHTML !== "" || au.checked) triggerDiff();
+  }
+
+  layoutBtns.forEach(function(b) {
+    b.addEventListener("click", function() {
+      setLayout(b.getAttribute("data-val"));
+    });
+  });
+
+  layoutIndicator.className = "theme-indicator" + (layoutMode === "unified" ? " dark" : " light");
+  layoutBtns.forEach(function(b) {
+    b.classList.toggle("active", b.getAttribute("data-val") === layoutMode);
+  });
+})();
 
 document.getElementById("hideWhitespace").addEventListener("change", function (e) { hideWhitespace = e.target.checked; if (au.checked) triggerDiff() });
 document.getElementById("ignoreCase").addEventListener("change", function (e) { ignoreCase = e.target.checked; if (au.checked) triggerDiff() });
@@ -419,18 +440,29 @@ document.getElementById("findBtn").addEventListener("click", function() {
   triggerDiff();
 });
 
-document.getElementById("themeToggle").addEventListener("change", function () {
-  var isDark = this.checked;
-  document.body.classList.toggle("dark", isDark);
-  localStorage.setItem("diffscan-theme", isDark ? "dark" : "light");
-});
-
 (function() {
-  var savedTheme = localStorage.getItem("diffscan-theme");
-  var isDark = savedTheme === "dark";
-  var toggle = document.getElementById("themeToggle");
-  if (toggle) toggle.checked = isDark;
-  document.body.classList.toggle("dark", isDark);
+  var savedTheme = localStorage.getItem("diffscan-theme") || "light";
+  var indicator = document.getElementById("themeIndicator");
+  var btns = document.querySelectorAll("#themeSelector .theme-btn");
+  if (!indicator || !btns.length) return;
+
+  function applyTheme(theme) {
+    var isDark = theme === "dark";
+    document.body.classList.toggle("dark", isDark);
+    localStorage.setItem("diffscan-theme", theme);
+    indicator.className = "theme-indicator" + (isDark ? " dark" : " light");
+    btns.forEach(function(b) {
+      b.classList.toggle("active", b.getAttribute("data-theme") === theme);
+    });
+  }
+
+  applyTheme(savedTheme);
+
+  btns.forEach(function(b) {
+    b.addEventListener("click", function() {
+      applyTheme(b.getAttribute("data-theme"));
+    });
+  });
 })();
 
 document.addEventListener("click", function (e) { if (e.target.id === "navFirst") goFirst(); if (e.target.id === "navPrev") goPrev(); if (e.target.id === "navNext") goNext(); if (e.target.id === "navLast") goLast() });
@@ -440,14 +472,32 @@ var activeMergeLine = null;
 var workingText1 = "";
 var workingText2 = "";
 
-document.getElementById("mergeBtn").addEventListener("click", function () {
-  if (mergeMode) { exitMergeMode() } else { enterMergeMode() }
-});
+function syncMergeUI(isOn) {
+  var indicator = document.getElementById("mergeIndicator");
+  var btns = document.querySelectorAll("#mergeSelector .theme-btn");
+  if (!indicator) return;
+  indicator.className = "theme-indicator" + (isOn ? " dark" : " light");
+  btns.forEach(function(b) {
+    b.classList.toggle("active", (b.getAttribute("data-val") === "on") === isOn);
+  });
+}
+
+(function() {
+  var mergeBtns = document.querySelectorAll("#mergeSelector .theme-btn");
+  mergeBtns.forEach(function(b) {
+    b.addEventListener("click", function() {
+      var val = b.getAttribute("data-val");
+      if (val === "on" && !mergeMode) enterMergeMode();
+      else if (val === "off" && mergeMode) exitMergeMode();
+    });
+  });
+  syncMergeUI(mergeMode);
+})();
 
 // Оптимизация: убраны inline-стили, состояние active управляется CSS-классом
 function enterMergeMode() {
   mergeMode = true;
-  document.getElementById("mergeBtn").checked = true;
+  syncMergeUI(true);
   resultEl.classList.add("merge-mode");
   activeMergeLine = null;
   triggerDiff();
@@ -455,7 +505,7 @@ function enterMergeMode() {
 
 function exitMergeMode() {
   mergeMode = false;
-  document.getElementById("mergeBtn").checked = false;
+  syncMergeUI(false);
   resultEl.classList.remove("merge-mode");
   activeMergeLine = null;
   clearMergeButtons();
