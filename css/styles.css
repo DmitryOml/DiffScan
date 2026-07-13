@@ -945,6 +945,30 @@ textarea.input::placeholder {
   word-break: break-word
 }
 
+.row-removed .line-no,
+.row-removed .line-no-right {
+  background: var(--diff-removed-bg);
+  border-color: transparent;
+}
+
+.row-added .line-no,
+.row-added .line-no-right {
+  background: var(--diff-added-bg);
+  border-color: transparent;
+}
+
+.row-modified-left .line-no,
+.row-modified-left .line-no-right {
+  background: var(--diff-removed-bg);
+  border-color: transparent;
+}
+
+.row-modified-right .line-no,
+.row-modified-right .line-no-right {
+  background: var(--diff-added-bg);
+  border-color: transparent;
+}
+
 .line-no {
   flex: 0 0 42px;
   text-align: right;
@@ -965,7 +989,8 @@ textarea.input::placeholder {
   background: var(--gutter-right-bg);
   border-right: 1px solid var(--gutter-right-border);
   user-select: none;
-  font-size: 13px
+  font-size: 13px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
 }
 
 .line-content {
@@ -1058,65 +1083,71 @@ textarea.input::placeholder {
 .split .panel:first-child .row-modified.merge-selected { background-color: var(--merge-selected-removed-bg); }
 .split .panel:last-child .row-modified.merge-selected { background-color: var(--merge-selected-added-bg); }
 
-.merge-toolbar-floating {
-  position: absolute;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 6px 10px 6px 14px;
-  background: var(--toolbar-bg);
-  border: 1px solid var(--toolbar-border);
-  border-radius: 22px;
-  box-shadow: var(--toolbar-shadow);
-  pointer-events: auto;
-}
+  .merge-toolbar-floating {
+    position: absolute;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: var(--toolbar-bg);
+    border: 1px solid var(--toolbar-border);
+    border-radius: 20px;
+    box-shadow: var(--toolbar-shadow);
+    pointer-events: auto;
+    width: max-content;
+    max-width: 90%;
+  }
+  
+  .merge-toolbar-floating .merge-btn {
+    position: static;
+    transform: none;
+    box-shadow: none;
+    height: 24px;
+    padding: 2px 10px;
+    font-size: 12px;
+    border-radius: 12px;
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    white-space: nowrap;
+    pointer-events: auto;
+    transition: background .15s;
+  }
 
-.toolbar-label {
-  color: var(--toolbar-label-color);
-  font-size: 13px;
-  white-space: nowrap;
-}
+  .merge-toolbar-floating .merge-btn.to-left {
+    background: #cf222e; /* Красный для переноса влево (удаления) */
+  }
 
-.merge-close-btn {
-  background: transparent;
-  border: none;
-  color: #bdbdbd;
-  font-size: 20px;
-  line-height: 1;
-  cursor: pointer;
-  padding: 0 2px;
-}
-.merge-close-btn:hover {
-  color: #fff;
-}
+  .merge-toolbar-floating .merge-btn.to-right {
+    background: #238636; /* Зеленый для переноса вправо (добавления) */
+  }
 
-.merge-toolbar-floating .merge-btn {
-  position: static;
-  transform: none;
-  box-shadow: none;
-  height: 28px;
-  padding: 5px 14px;
-  font-size: 13px;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  white-space: nowrap;
-  pointer-events: auto;
-  background: #2f81f7;
-  transition: background .15s;
-  border-radius: 999px;
-}
+  .merge-toolbar-floating .merge-btn.to-left:hover {
+    background: #a41e2a;
+  }
 
-.merge-toolbar-floating .merge-btn:hover {
-  background: #3b8cff;
-}
+  .merge-toolbar-floating .merge-btn.to-right:hover {
+    background: #2ea043;
+  }
+  
+  .merge-close-btn {
+    background: transparent;
+    border: none;
+    color: #bdbdbd;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 2px;
+  }
+  .merge-close-btn:hover {
+    color: #fff;
+  }
 
 .mark-removed {
   background: var(--mark-removed-bg);

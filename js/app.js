@@ -236,7 +236,7 @@ function renderUnified(c, dd, rm, ad, rl, rr) {
     else if (e.type === "equal") b.insertAdjacentHTML("beforeend", '<div class="diff-line row-equal"><span class="line-no">' + e.leftNo + '</span><span class="line-no-right">' + e.rightNo + '</span><span class="line-content">' + escapeHtml(e.left || "") + '</span></div>');
     else if (e.type === "removed") b.insertAdjacentHTML("beforeend", '<div class="diff-line row-removed"><span class="line-no">' + e.leftNo + '</span><span class="line-no-right"></span><span class="line-content">' + escapeHtml(e.left || "") + '</span></div>');
     else if (e.type === "added") b.insertAdjacentHTML("beforeend", '<div class="diff-line row-added"><span class="line-no"></span><span class="line-no-right">' + e.rightNo + '</span><span class="line-content">' + escapeHtml(e.right || "") + '</span></div>');
-    else if (e.type === "modified") { var inner = computeInnerDiff(e.left, e.right); b.insertAdjacentHTML("beforeend", '<div class="diff-line row-modified row-modified-left"><span class="line-no">' + e.leftNo + '</span><span class="line-no-right">' + e.rightNo + '</span><span class="line-content">' + renderInnerHtml(inner.left, "left") + '</span></div><div class="diff-line row-modified row-modified-right"><span class="line-no">' + e.leftNo + '</span><span class="line-no-right">' + e.rightNo + '</span><span class="line-content">' + renderInnerHtml(inner.right, "right") + '</span></div>') }
+    else if (e.type === "modified") { var inner = computeInnerDiff(e.left, e.right); b.insertAdjacentHTML("beforeend", '<div class="diff-line row-modified row-modified-left"><span class="line-no">' + e.leftNo + '</span><span class="line-no-right"></span><span class="line-content">' + renderInnerHtml(inner.left, "left") + '</span></div><div class="diff-line row-modified row-modified-right"><span class="line-no"></span><span class="line-no-right">' + e.rightNo + '</span><span class="line-content">' + renderInnerHtml(inner.right, "right") + '</span></div>') }
   }
   p.appendChild(b); c.appendChild(p)
 }
@@ -567,9 +567,29 @@ function showMergeButtons(line) {
   block[block.length - 1].classList.add("merge-block-bottom");
   block.forEach(function (l) { l.classList.add("merge-selected"); });
 
-  var firstLn = parseInt((isLeft ? block[0].dataset.leftNo : block[0].dataset.rightNo) || 0, 10);
-  var lastLn = parseInt((isLeft ? block[block.length-1].dataset.leftNo : block[block.length-1].dataset.rightNo) || 0, 10);
-  var label = firstLn === lastLn ? "Line " + firstLn + " selected" : "Lines " + firstLn + "-" + lastLn + " selected";
+  // Функция для получения номера строки из элемента
+  function getLineNo(el, side) {
+    if (!el) return null;
+    var val = (side === "left") ? el.dataset.leftNo : el.dataset.rightNo;
+    var num = parseInt(val, 10);
+    return isNaN(num) || num === 0 ? null : num;
+  }
+
+  var firstLn = getLineNo(block[0], isLeft ? "left" : "right");
+  var lastLn = getLineNo(block[block.length-1], isLeft ? "left" : "right");
+  
+  // Если не нашли прямым способом, попробуем взять хотя бы что-то из DOM
+  if (!firstLn) firstLn = parseInt(block[0].dataset.leftNo || block[0].dataset.rightNo, 10);
+  if (!lastLn) lastLn = parseInt(block[block.length-1].dataset.leftNo || block[block.length-1].dataset.rightNo, 10);
+
+  var label;
+  if (!firstLn && !lastLn) {
+    label = "Selected lines";
+  } else if (!lastLn || firstLn === lastLn) {
+    label = "Line " + (firstLn || lastLn) + " selected";
+  } else {
+    label = "Lines " + firstLn + "-" + lastLn + " selected";
+  }
   var targetSide = isLeft ? "right" : "left";
 
   var toolbar = document.createElement("div");
@@ -579,8 +599,11 @@ function showMergeButtons(line) {
   labelSpan.className = "toolbar-label";
   labelSpan.textContent = label;
   var btn = document.createElement("button");
-  btn.className = "merge-btn";
-  btn.innerHTML = "Merge " + (isLeft ? "&rarr;" : "&larr;");
+  btn.className = "merge-btn " + (targetSide === "left" ? "to-left" : "to-right");
+  
+  var targetName = (targetSide === "left") ? "Original" : "Changed";
+  btn.textContent = "Merge → " + targetName;
+  
   btn.addEventListener("click", function (ev) {
     ev.stopPropagation();
     doMergeBlock(block, targetSide, isModified);
@@ -596,34 +619,35 @@ function showMergeButtons(line) {
     activeMergeLine = null;
   });
 
-  if (isLeft) {
-    toolbar.appendChild(labelSpan);
-    toolbar.appendChild(btn);
-    toolbar.appendChild(closeBtn);
-  } else {
-    toolbar.appendChild(closeBtn);
-    toolbar.appendChild(btn);
-    toolbar.appendChild(labelSpan);
-  }
+  toolbar.appendChild(labelSpan);
+  toolbar.appendChild(btn);
+  toolbar.appendChild(closeBtn);
 
   resultEl.style.position = "relative";
   resultEl.appendChild(toolbar);
 
   var firstRect = block[0].getBoundingClientRect();
   var resRect = resultEl.getBoundingClientRect();
+  
+  // Рассчитываем координаты относительно контейнера resultEl
   var blockTop = firstRect.top - resRect.top + resultEl.scrollTop;
-
-  var split = block[0].closest(".split");
-  if (split) {
-    var splitRect = split.getBoundingClientRect();
-    var splitCenter = splitRect.left + splitRect.width / 2;
-    toolbar.style.left = (splitCenter - resRect.left) + "px";
+  var toolbarLeft;
+  
+  if (layoutMode !== "unified") {
+    var split = block[0].closest(".split");
+    if (split) {
+      var splitRect = split.getBoundingClientRect();
+      var splitCenter = splitRect.left + splitRect.width / 2;
+      toolbarLeft = splitCenter - resRect.left;
+    } else {
+      toolbarLeft = (firstRect.left - resRect.left) + firstRect.width / 2;
+    }
   } else {
-    var blockLeft = firstRect.left - resRect.left;
-    var blockWidth = firstRect.width;
-    toolbar.style.left = (blockLeft + blockWidth / 2) + "px";
+    toolbarLeft = (firstRect.left - resRect.left) + firstRect.width / 2;
   }
-  toolbar.style.top = (blockTop - 44) + "px";
+
+  toolbar.style.top = (blockTop - 40) + "px";
+  toolbar.style.left = toolbarLeft + "px";
   toolbar.style.transform = "translateX(-50%)";
 }
 
