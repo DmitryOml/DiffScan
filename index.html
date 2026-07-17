@@ -124,14 +124,14 @@
           <span>Original text</span>
           <div class="header-actions">
             <label class="header-action-btn" title="Open file" style="display: none;"><svg width="16" height="16" class="icon" aria-hidden="true"><use href="#icon-upload"/></svg><input type="file" id="file1" style="display:none"
-                accept=".txt,.js,.html,.css,.json,.md,.csv,.py,.sh,.ts,.jsx,.tsx"></label>
+                accept=".txt,.js,.html,.css,.json,.md,.csv,.py,.sh,.ts,.jsx,.tsx,.docx"></label>
           </div>
         </div>
         <div class="input-container" id="dropZone1">
           <div class="drop-message">
             <svg width="40" height="40" viewBox="0 0 16 16"><use href="#icon-upload"/></svg>
             <p>Drop file here or click to browse</p>
-            <p style="font-size: 0.85em; opacity: 0.7; margin-top: 4px;">Supported: txt, js, html, css, json, md, py, sh, ts, etc.</p>
+            <p style="font-size: 0.85em; opacity: 0.7; margin-top: 4px;">Supported: txt, js, html, css, json, md, py, sh, ts, docx, etc.</p>
           </div>
           <div id="gutter1" class="line-no-input">1</div>
           <textarea id="text1" class="input" placeholder="Text 1" wrap="off"></textarea>
@@ -158,14 +158,14 @@
           <span>Changed text</span>
           <div class="header-actions">
             <label class="header-action-btn" title="Open file" style="display: none;"><svg width="16" height="16" class="icon" aria-hidden="true"><use href="#icon-upload"/></svg><input type="file" id="file2" style="display:none"
-                accept=".txt,.js,.html,.css,.json,.md,.csv,.py,.sh,.ts,.jsx,.tsx"></label>
+                accept=".txt,.js,.html,.css,.json,.md,.csv,.py,.sh,.ts,.jsx,.tsx,.docx"></label>
           </div>
         </div>
         <div class="input-container" id="dropZone2">
           <div class="drop-message">
             <svg width="40" height="40" viewBox="0 0 16 16"><use href="#icon-upload"/></svg>
             <p>Drop file here or click to browse</p>
-            <p style="font-size: 0.85em; opacity: 0.7; margin-top: 4px;">Supported: txt, js, html, css, json, md, py, sh, ts, etc.</p>
+            <p style="font-size: 0.85em; opacity: 0.7; margin-top: 4px;">Supported: txt, js, html, css, json, md, py, sh, ts, docx, etc.</p>
           </div>
           <div id="gutter2" class="line-no-input">1</div>
           <textarea id="text2" class="input" placeholder="Text 2" wrap="off"></textarea>
@@ -249,6 +249,7 @@
       document.getElementById(id).classList.add('active');
     }
   </script>
+  <script src="js/mammoth.browser.js"></script>
   <script src="js/app.js"></script>
 </body>
 

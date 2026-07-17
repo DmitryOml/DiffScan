@@ -359,8 +359,18 @@ ta2.addEventListener("scroll", function () {
 
 updateG1(); updateG2(); updateCounts();
 
-function setupFileUpload(iid, tid, fn) { document.getElementById(iid).addEventListener("change", function (e) { var f = e.target.files[0]; if (!f) return; if (f.size > 104857600) { alert("File is too large. Please select a file under 100 MB."); return; } var r = new FileReader(); r.onload = function (ev) { document.getElementById(tid).value = ev.target.result; fn(); if (au.checked) triggerDiff() }; r.onerror = function() { alert("Failed to read file. Please try again.") }; r.readAsText(f); e.target.value = "" }) }
-setupFileUpload("file1", "text1", updateG1); setupFileUpload("file2", "text2", updateG2);
+function setupFileUpload(iid, textAreaId, gutterId) {
+  document.getElementById(iid).addEventListener("change", function (e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const textArea = document.getElementById(textAreaId);
+    const dropMessage = textArea.parentElement.querySelector('.drop-message');
+    handleFile(file, textArea, gutterId, dropMessage);
+    e.target.value = "";
+  });
+}
+setupFileUpload("file1", "text1", "gutter1");
+setupFileUpload("file2", "text2", "gutter2");
 
 var pb = document.querySelectorAll("#precisionControl .segment-btn");
 pb.forEach(function (b) { b.addEventListener("click", function () { pb.forEach(function (x) { x.classList.remove("active") }); b.classList.add("active"); diffPrecision = b.getAttribute("data-val"); if (resultEl.innerHTML !== "" || au.checked) triggerDiff() }) });
@@ -790,6 +800,33 @@ function doMergeBlock(block, targetSide, isModified) {
   activeMergeLine = null
 }
 
+async function handleFile(file, textArea, gutterId, dropMessage) {
+  if (file.size > 104857600) { alert("File is too large."); return; }
+  
+  if (file.name.toLowerCase().endsWith('.docx')) {
+    const arrayBuffer = await file.arrayBuffer();
+    mammoth.extractRawText({arrayBuffer: arrayBuffer})
+      .then(function(result) {
+        textArea.value = result.value;
+        updateInputGutter(textArea.id, gutterId);
+        updateCounts();
+        if (au.checked) triggerDiff();
+        if (dropMessage) dropMessage.classList.add('hidden');
+      })
+      .catch(function(err) { alert("Error reading docx: " + err.message); });
+  } else {
+    const r = new FileReader();
+    r.onload = (ev) => {
+      textArea.value = ev.target.result;
+      updateInputGutter(textArea.id, gutterId);
+      updateCounts();
+      if (au.checked) triggerDiff();
+      if (dropMessage) dropMessage.classList.add('hidden');
+    };
+    r.readAsText(file);
+  }
+}
+
 function setupDropZone(dropZoneId, textAreaId, gutterId) {
   const dropZone = document.getElementById(dropZoneId);
   const textArea = document.getElementById(textAreaId);
@@ -813,17 +850,7 @@ function setupDropZone(dropZoneId, textAreaId, gutterId) {
     dropZone.classList.remove('drag-over');
     const files = e.dataTransfer.files;
     if (files.length > 0) {
-      const file = files[0];
-      if (file.size > 104857600) { alert("File is too large."); return; }
-      const r = new FileReader();
-      r.onload = (ev) => {
-        textArea.value = ev.target.result;
-        updateInputGutter(textAreaId, gutterId);
-        updateCounts();
-        if (au.checked) triggerDiff();
-        dropMessage.classList.add('hidden');
-      };
-      r.readAsText(file);
+      handleFile(files[0], textArea, gutterId, dropMessage);
     }
   });
 
