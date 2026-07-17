@@ -13,7 +13,11 @@ Offline text diff tool with line/word/char precision and smart change navigation
 - **Transforms**: Trim, UPPER, lower, Sort, Unique, Rm empty
 - **Navigation**: jump between changes with highlight
 - **Sync scroll** between input panels
+- **Drag and drop** file upload with visual drop zone
+- **DOCX support** — open Word documents directly
+- **Typography** — adjustable font size
 - **Open files** from disk
+- **Themes**: Light / Dark
 - Works offline — 100% vanilla JS, single-page app
 
 ## Quick Start
@@ -32,12 +36,22 @@ Just open `index.html` in a browser — no build step needed.
 ## Project Structure
 
 ```
-index.html        # Main page
-css/styles.css    # Styles
-js/app.js         # Application logic
-Dockerfile        # Docker image (nginx:alpine)
-nginx.conf        # Nginx config
+index.html            # Main page
+about.html            # About / FAQ page
+css/styles.css        # Styles
+js/app.js             # Application logic
+js/mammoth.browser.js # DOCX reader library
+icons/                # SVG icons
+images/               # QR codes for donations
+Dockerfile            # Docker image (nginx:alpine)
+nginx.conf            # Nginx config
+LICENSE               # MIT license
+THIRD-PARTY-NOTICES.md # Third-party software notices
 ```
+
+## Third-Party Software
+
+This project uses [Octicons](https://github.com/primer/octicons) (MIT) and [Mammoth.js](https://github.com/mwilliamson/mammoth.js) (BSD-2-Clause). See `THIRD-PARTY-NOTICES.md` for details.
 
 ## License
 
