@@ -790,6 +790,52 @@ function doMergeBlock(block, targetSide, isModified) {
   activeMergeLine = null
 }
 
+function setupDropZone(dropZoneId, textAreaId, gutterId) {
+  const dropZone = document.getElementById(dropZoneId);
+  const textArea = document.getElementById(textAreaId);
+  const dropMessage = dropZone.querySelector('.drop-message');
+  const panel = dropZone.closest('.panel');
+  const fileInput = panel.querySelector('input[type="file"]');
+
+  dropMessage.addEventListener('click', () => fileInput.click());
+
+  dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.classList.add('drag-over');
+  });
+
+  dropZone.addEventListener('dragleave', () => {
+    dropZone.classList.remove('drag-over');
+  });
+
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      const file = files[0];
+      if (file.size > 104857600) { alert("File is too large."); return; }
+      const r = new FileReader();
+      r.onload = (ev) => {
+        textArea.value = ev.target.result;
+        updateInputGutter(textAreaId, gutterId);
+        updateCounts();
+        if (au.checked) triggerDiff();
+        dropMessage.classList.add('hidden');
+      };
+      r.readAsText(file);
+    }
+  });
+
+  textArea.addEventListener('input', () => {
+    if (textArea.value.trim() !== "") dropMessage.classList.add('hidden');
+    else dropMessage.classList.remove('hidden');
+  });
+}
+
+setupDropZone("dropZone1", "text1", "gutter1");
+setupDropZone("dropZone2", "text2", "gutter2");
+
 document.getElementById("toggleSettings").addEventListener("click", function () {
   var bar = document.getElementById("settingsBar");
   bar.classList.toggle("collapsed");
@@ -816,3 +862,14 @@ document.addEventListener("click", function (e) {
   if (bar.contains(e.target)) return;
   bar.classList.add("collapsed");
 });
+
+(function() {
+  var bar = document.getElementById("settingsBar");
+  var pinBtn = document.getElementById("pinSettings");
+  if (window.innerWidth <= 760) {
+    bar.classList.add("collapsed");
+  } else {
+    bar.classList.add("pinned");
+    if (pinBtn) pinBtn.classList.add("pinned");
+  }
+})();

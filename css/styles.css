@@ -234,13 +234,18 @@ body {
 .main-content {
   margin-left: 48px;
   transition: margin-left .2s ease;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
-.settings-bar.collapsed ~ .main-content {
+.settings-bar.collapsed ~ .main-content,
+.settings-bar.collapsed ~ .footer-note {
   margin-left: 48px;
 }
 
-.settings-bar:not(.collapsed) ~ .main-content {
+.settings-bar:not(.collapsed) ~ .main-content,
+.settings-bar:not(.collapsed) ~ .footer-note {
   margin-left: 280px;
 }
 
@@ -460,6 +465,53 @@ textarea.input::placeholder {
 
 .transform-menu button:hover {
   background: var(--segmented-hover-bg);
+}
+
+/* Drag and Drop Zone */
+.input-container {
+  position: relative;
+}
+
+.drop-message {
+  position: absolute;
+  top: 25%;
+  left: 25%;
+  right: 25%;
+  bottom: 25%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--input-bg);
+  border: 2px dashed var(--panel-border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 14px;
+  cursor: pointer;
+  z-index: 10;
+  transition: border-color .15s, background .15s;
+}
+
+.drop-message p {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.drop-message svg {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 8px;
+  fill: var(--text-primary);
+}
+
+.drop-message.hidden {
+  display: none;
+}
+
+.input-container.drag-over .drop-message {
+  border-color: var(--link-color);
+  background: var(--diff-added-bg);
+  color: var(--link-color);
 }
 
 /* Settings sidebar */
@@ -1213,7 +1265,6 @@ textarea.input::placeholder {
   padding: 20px 0;
   background: var(--footer-bg);
   margin-top: auto;
-  width: 100%;
 }
 
 .scroll-btn {
