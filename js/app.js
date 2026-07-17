@@ -863,6 +863,13 @@ function setupDropZone(dropZoneId, textAreaId, gutterId) {
 setupDropZone("dropZone1", "text1", "gutter1");
 setupDropZone("dropZone2", "text2", "gutter2");
 
+// Typography settings
+document.getElementById("fontSizeRange").addEventListener("input", function(e) {
+  const size = e.target.value + "px";
+  document.getElementById("fontSizeVal").textContent = size;
+  document.documentElement.style.setProperty("--diff-font-size", size);
+});
+
 document.getElementById("toggleSettings").addEventListener("click", function () {
   var bar = document.getElementById("settingsBar");
   bar.classList.toggle("collapsed");

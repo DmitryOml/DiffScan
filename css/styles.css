@@ -100,6 +100,8 @@
   --toolbar-border: rgba(0,0,0,0.12);
   --toolbar-shadow: 0 10px 25px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.7);
   --toolbar-label-color: #4a4a48;
+  --diff-font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  --diff-font-size: 15px;
 }
 
 body.dark {
@@ -350,8 +352,8 @@ h1.app-title {
   background: var(--gutter-bg);
   border-right: 1px solid var(--gutter-border);
   user-select: none;
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-  font-size: 15px;
+  font-family: var(--diff-font-family);
+  font-size: var(--diff-font-size);
   line-height: 1.5;
   white-space: pre;
   overflow: hidden
@@ -363,8 +365,8 @@ textarea.input {
   border: none;
   outline: none;
   resize: none;
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-  font-size: 15px;
+  font-family: var(--diff-font-family);
+  font-size: var(--diff-font-size);
   line-height: 1.5;
   color: var(--input-color);
   background: var(--input-bg);
@@ -512,6 +514,50 @@ textarea.input::placeholder {
   border-color: var(--link-color);
   background: var(--diff-added-bg);
   color: var(--link-color);
+}
+
+/* Typography section */
+.typography-section {
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.typography-section .setting-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: flex;
+  justify-content: space-between;
+}
+
+.typography-section .setting-label span {
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.typography-section select {
+  width: 100%;
+  padding: 6px;
+  background: var(--segmented-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--segmented-border);
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.typography-section .range-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.typography-section input[type=range] {
+  flex: 1;
+  accent-color: var(--segmented-active-bg);
 }
 
 /* Settings sidebar */
@@ -988,8 +1034,8 @@ textarea.input::placeholder {
   display: flex;
   white-space: pre;
   min-height: 20px;
-  font-size: 13px;
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: var(--diff-font-size);
+  font-family: var(--diff-font-family);
 }
 
 .diff-line.wrap {
@@ -1029,8 +1075,8 @@ textarea.input::placeholder {
   background: var(--gutter-bg);
   border-right: 1px solid var(--gutter-border);
   user-select: none;
-  font-size: 12px;
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: var(--diff-font-size);
+  font-family: var(--diff-font-family);
 }
 
 .line-no-right {
@@ -1041,8 +1087,8 @@ textarea.input::placeholder {
   background: var(--gutter-right-bg);
   border-right: 1px solid var(--gutter-right-border);
   user-select: none;
-  font-size: 13px;
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: var(--diff-font-size);
+  font-family: var(--diff-font-family);
 }
 
 .line-content {
